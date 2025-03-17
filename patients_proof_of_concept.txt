@@ -1,92 +1,85 @@
 [ {
   "uuid" : "dd656d6a-1691-11df-97a5-7038c432aabf",
-  "display" : "519MO-2 - Allocius L Chemaiyo",
+  "display" : "519MO-2",
   "personName" : "Allocius L Chemaiyo",
   "gender" : "M",
   "age" : 21,
   "birthdate" : "2003-04-21T00:00:00.000+0200"
 }, {
   "uuid" : "dd714708-1691-11df-97a5-7038c432aabf",
-  "display" : "1692EG-2 - Allan Aden Kipkasi",
+  "display" : "1692EG-2",
   "personName" : "Allan Aden Kipkasi",
   "gender" : "F",
   "age" : 49,
   "birthdate" : "1976-02-27T00:00:00.000+0100"
 }, {
   "uuid" : "dd794fd3-1691-11df-97a5-7038c432aabf",
-  "display" : "2858BF-3 - Allocious Aduka Nchoe",
+  "display" : "2858BF-3",
   "personName" : "Allocious Aduka Nchoe",
   "gender" : "M",
-  "age" : 62,
+  "age" : 63,
   "birthdate" : "1962-03-12T00:00:00.000+0100"
 }, {
   "uuid" : "dd88cddc-1691-11df-97a5-7038c432aabf",
-  "display" : "5014TS-3 - Allosious Omwombo Nyoro",
+  "display" : "5014TS-3",
   "personName" : "Allosious Omwombo Nyoro",
   "gender" : "M",
   "age" : 60,
   "birthdate" : "1965-01-05T00:00:00.000+0100"
 }, {
   "uuid" : "dd9a66b6-1691-11df-97a5-7038c432aabf",
-  "display" : "7265TU-5 - Allazen Lumashe Ayebei",
+  "display" : "7265TU-5",
   "personName" : "Allazen Lumashe Ayebei",
   "gender" : "M",
   "age" : 48,
   "birthdate" : "1976-04-04T00:00:00.000+0100"
 }, {
   "uuid" : "dd711970-1691-11df-97a5-7038c432aabf",
-  "display" : "1641AM-0 - Alloycious Muthoka Chepngotie",
+  "display" : "1641AM-0",
   "personName" : "Alloycious Muthoka Chepngotie",
   "gender" : "M",
   "age" : 61,
   "birthdate" : "1963-05-20T00:00:00.000+0100"
 }, {
   "uuid" : "dd669343-1691-11df-97a5-7038c432aabf",
-  "display" : "907KP-9 - Allocius Sorgok Anyanda",
+  "display" : "907KP-9",
   "personName" : "Allocius Sorgok Anyanda",
   "gender" : "M",
   "age" : 42,
   "birthdate" : "1982-04-15T00:00:00.000+0200"
 }, {
   "uuid" : "dd7066b5-1691-11df-97a5-7038c432aabf",
-  "display" : "1350KT-2 - Allociuos Maina Karisa",
+  "display" : "1350KT-2",
   "personName" : "Allociuos Maina Karisa",
   "gender" : "M",
   "age" : 49,
   "birthdate" : "1975-05-19T00:00:00.000+0100"
 }, {
   "uuid" : "dd83845d-1691-11df-97a5-7038c432aabf",
-  "display" : "4103NT-9 - Alloycious Klay Samoei",
+  "display" : "4103NT-9",
   "personName" : "Alloycious Klay Samoei",
   "gender" : "M",
   "age" : 49,
   "birthdate" : "1975-03-19T00:00:00.000+0100"
 }, {
   "uuid" : "dd86dff3-1691-11df-97a5-7038c432aabf",
-  "display" : "4522NT-0 - Alloius Tele Ochola",
+  "display" : "4522NT-0",
   "personName" : "Alloius Tele Ochola",
   "gender" : "M",
   "age" : 47,
   "birthdate" : "1977-12-02T00:00:00.000+0100"
 }, {
   "uuid" : "dd8e783e-1691-11df-97a5-7038c432aabf",
-  "display" : "5617TU-9 - Allazen Kimengich Imbaga",
+  "display" : "5617TU-9",
   "personName" : "Allazen Kimengich Imbaga",
   "gender" : "M",
   "age" : 63,
   "birthdate" : "1962-03-04T00:00:00.000+0100"
 }, {
-  "uuid" : "dd92cbbe-1691-11df-97a5-7038c432aabf",
-  "display" : "6260TU-7 - Allan Jepyego Sertoi",
-  "personName" : "Allan Jepyego Sertoi",
-  "gender" : "F",
-  "age" : 49,
-  "birthdate" : "1975-07-26T00:00:00.000+0100"
-}, {
   "uuid" : "dda16d48-1691-11df-97a5-7038c432aabf",
-  "display" : "8148MP-0 - Alloysious Nakwawi Berei",
-  "personName" : "Alloysious Nakwawi Berei",
+  "display" : "8148MP-0",
+  "personName" : "Alloysious Jepyego Beeren",
   "gender" : "M",
   "age" : 55,
   "birthdate" : "1969-12-04T00:00:00.000+0100"
-} ]
+} ]beeee

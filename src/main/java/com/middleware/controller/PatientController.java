@@ -11,18 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Controller Klasse um Patientendaten von OpenMRS zu OpenELIS zu mappen.
+ * Controller Klasse um Patientendaten von OpenMRS zu holen.
  */
 
 @RestController
-@RequestMapping("/patient")
+@RequestMapping("/api/patient")
 public class PatientController {
 
-    private final OpenMRSClient openMRSClient;
     private final PatientService patientService;
 
     public PatientController(OpenMRSClient openMRSClient, PatientService patientService) {
-        this.openMRSClient = openMRSClient;
         this.patientService = patientService;
     }
 
@@ -30,6 +28,7 @@ public class PatientController {
     public List<PatientDTO> getAllPatients() {
         return patientService.getAllPatients();
     }
+
 
 
 }
