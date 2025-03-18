@@ -1,23 +1,22 @@
 package com.middleware.controller;
 
-import com.middleware.model.VisitDTO;
-import com.middleware.service.VisitService;
+import com.middleware.model.ConceptDTO;
+import com.middleware.service.ConceptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/visit")
+@RequestMapping("/api/concepts")
 @RequiredArgsConstructor
-public class VisitController {
+public class ConceptController {
 
-    private final VisitService visitService;
+    private final ConceptService conceptService;
 
-    @GetMapping("/api/visit")
-    public List<VisitDTO> getVisitsLastHour() {
-        return visitService.getVisitsFromLastHour();
+    @GetMapping
+    public List<ConceptDTO> getAllConcepts() {
+        return conceptService.getAllConcepts();
     }
 }
