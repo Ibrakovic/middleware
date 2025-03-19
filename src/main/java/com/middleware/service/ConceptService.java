@@ -26,6 +26,7 @@ public class ConceptService {
                     JsonNode description = concept.path("descriptions").isArray()
                             ? concept.path("descriptions").get(0)
                             : null;
+                    JsonNode datatype = concept.path("datatype");
 
                     conceptList.add(new ConceptDTO(
                             UUID.fromString(concept.path("uuid").asText()),
@@ -34,7 +35,13 @@ public class ConceptService {
                             UUID.fromString(conceptClass.path("uuid").asText()),
                             conceptClass.path("description").asText(),
                             description != null ? UUID.fromString(description.path("uuid").asText()) : null,
-                            description != null ? description.path("description").asText() : null
+                            description != null ? description.path("description").asText() : null,
+                            datatype.has("uuid") && !datatype.path("uuid").asText().isBlank()
+                                    ? UUID.fromString(datatype.path("uuid").asText())
+                                    : null,
+                            concept.path("version").asText()
+
+
                     ));
                 }
             }

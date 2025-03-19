@@ -17,4 +17,6 @@ public class ConceptDTO {
     private String conceptClassDescription;
     private UUID descriptionsUuid;
     private String descriptionsDescription;
+    private UUID datatypeUuid;
+    private String version;
 }

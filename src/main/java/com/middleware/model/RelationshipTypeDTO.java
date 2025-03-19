@@ -8,13 +8,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class ObsDTO {
+public class RelationshipTypeDTO {
     private UUID uuid;
+    private String description;
+    private String aIsToB;
+    private String bIsToA;
+    private int weight;
     private String display;
-    private UUID patientUuid;
-    private String obsDatetime;
-    private UUID conceptUuid;
-    private String conceptName;
-    private UUID valueUuid;
 }

@@ -23,7 +23,7 @@ public class OpenmrsOpenelisMiddlewareApplication {
 	}
 
 	@Bean
-	CommandLineRunner run(PatientService patientService, VisitService visitService, DrugService drugService, VisitTypeService visitTypeService, ObsService obsService, ConceptService conceptService) {
+	CommandLineRunner run(PatientService patientService, VisitService visitService, DrugService drugService, VisitTypeService visitTypeService, ObsService obsService, ConceptService conceptService, ProgramService programService) {
 		return args -> {
 			List<PatientDTO> patients = patientService.getAllPatients();
 			List<VisitDTO> visits = visitService.getVisitsFromLastHour();
@@ -33,6 +33,7 @@ public class OpenmrsOpenelisMiddlewareApplication {
 			List<UUID> patientUUIDs = PatientService.getPatientUUIDs(allPatients);
 			List<ObsDTO> obs = obsService.getAllObsForAllPatients(patientUUIDs);
 			List<ConceptDTO> concept = conceptService.getAllConcepts();
+			List<ProgramDTO> programs = programService.getAllPrograms();
 
 			// Ergebnis in eine .txt-Datei schreiben
 			try (FileWriter writer = new FileWriter("patients_proof_of_concept.txt")) {
@@ -69,19 +70,28 @@ public class OpenmrsOpenelisMiddlewareApplication {
 				System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
 
 			}
-			try (FileWriter writer = new FileWriter("obs_proof_of_concept.txt")) {
+//			try (FileWriter writer = new FileWriter("obs_proof_of_concept.txt")) {
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obs));
+//				writer.write("debug");
+//				System.out.println("Beobachtungsdaten erfolgreich gespeichert in 'obs_proof_of_concept.txt'");
+//			} catch (IOException e) {
+//				System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
+//			}
+//			try (FileWriter writer = new FileWriter("concept_proof_of_concept.txt")) {
+//				ObjectMapper objectMapper = new ObjectMapper();
+//				writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(concept));
+//				writer.write("debug");
+//				System.out.println("Concepts erfolgreich gespeichert in 'concept_proof_of_concept.txt'");
+//			} catch (IOException e) {
+//				System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
+//			}
+//
+			try (FileWriter writer = new FileWriter("programs_proof_of_concept.txt")) {
 				ObjectMapper objectMapper = new ObjectMapper();
-				writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obs));
+				writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(programs));
 				writer.write("debug");
-				System.out.println("Beobachtungsdaten erfolgreich gespeichert in 'obs_proof_of_concept.txt'");
-			} catch (IOException e) {
-				System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
-			}
-			try (FileWriter writer = new FileWriter("concept_proof_of_concept.txt")) {
-				ObjectMapper objectMapper = new ObjectMapper();
-				writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(concept));
-				writer.write("debug");
-				System.out.println("Concepts erfolgreich gespeichert in 'concept_proof_of_concept.txt'");
+				System.out.println("Programs erfolgreich gespeichert in 'programs_proof_of_concept.txt'");
 			} catch (IOException e) {
 				System.err.println("Fehler beim Schreiben der Datei: " + e.getMessage());
 			}

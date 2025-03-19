@@ -17,5 +17,8 @@ public class DrugDTO {
     private String maximumDailyDose;
     private String minimumDailyDose;
     private boolean retired;
+    private UUID conceptUuid;
+    private boolean combination;
+    private String dosageForm;
 
 }
