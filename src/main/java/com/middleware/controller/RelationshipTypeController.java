@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/relationshiptypes")
+@RequestMapping("/api/relationshiptype")
 @RequiredArgsConstructor
 public class RelationshipTypeController {
 
