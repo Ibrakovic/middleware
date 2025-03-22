@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.PatientDTO;
+import com.middleware.repository.PatientRepository;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,9 +16,12 @@ import java.util.UUID;
 public class PatientService {
 
     private final OpenMRSClient openMRSClient;
+    private final PatientRepository patientRepository;
 
-    public PatientService(OpenMRSClient openMRSClient) {
+
+    public PatientService(OpenMRSClient openMRSClient, PatientRepository patientRepository) {
         this.openMRSClient = openMRSClient;
+        this.patientRepository = patientRepository;
     }
 
     /**
@@ -32,6 +37,13 @@ public class PatientService {
         return patientDTOs;
     }
 
+    public void savePatientToDatabase(List<PatientDTO> patients) {
+        for (PatientDTO patient : patients) {
+            String result = patientRepository.savePatient(patient);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + patients.size() + " Patienten gespeichert.");
+    }
     /**
      * Mapped die JSON-Daten eines Patienten aus OpenMRS auf ein PatientDTO-Objekt.
      * @param patientJson JSON-Daten eines Patienten aus OpenMRS.
