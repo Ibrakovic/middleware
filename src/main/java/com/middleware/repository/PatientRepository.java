@@ -23,15 +23,16 @@ public class PatientRepository {
 
     public String savePatient(PatientDTO patient) {
         String sql = """
-                INSERT INTO patient (uuid, display, person_name, gender, age, birthdate)
-                VALUES (?, ?, ?, ?, ?, ?)
-                ON CONFLICT (uuid) DO UPDATE
-                SET display = EXCLUDED.display,
-                    person_name = EXCLUDED.person_name,
-                    gender = EXCLUDED.gender,
-                    age = EXCLUDED.age,
-                    birthdate= EXCLUDED.birthdate
-            """;
+    INSERT INTO patient (uuid, display, person_name, gender, age, birthdate)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT (uuid) DO UPDATE
+    SET display = EXCLUDED.display,
+        person_name = EXCLUDED.person_name,
+        gender = EXCLUDED.gender,
+        age = EXCLUDED.age,
+        birthdate = EXCLUDED.birthdate
+    """;
+
 
         try {
             jdbcTemplate.update(sql,
