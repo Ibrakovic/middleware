@@ -3,7 +3,9 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.PatientIdentifierTypeDTO;
+import com.middleware.repository.PatientIdentifierTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +16,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PatientIdentifierTypeService {
     private final OpenMRSClient openMRSClient;
+    private final PatientIdentifierTypeRepository patientIdentifierTypeRepository;
+
+    public void savePatientIdentifierTypesToDatabase(List<PatientIdentifierTypeDTO> patientIdentifierTypes) {
+        for (PatientIdentifierTypeDTO patientIdentifierType : patientIdentifierTypes) {
+            String result = patientIdentifierTypeRepository.savePatientIdentifierTypeRepository(patientIdentifierType);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + patientIdentifierTypes.size() + " PatientIdentifierTypes gespeichert.");
+    }
 
     public List<PatientIdentifierTypeDTO> getAllPatientIdentifierTypes() {
         List<PatientIdentifierTypeDTO> identifierTypeList = new ArrayList<>();

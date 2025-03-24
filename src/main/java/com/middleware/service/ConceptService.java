@@ -3,6 +3,7 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.ConceptDTO;
+import com.middleware.repository.ConceptRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -13,6 +14,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ConceptService {
     private final OpenMRSClient openMRSClient;
+    private final ConceptRepository conceptRepository;
+
+    public void saveConceptsToDatabase(List<ConceptDTO> concepts) {
+        for (ConceptDTO concept : concepts) {
+            String result = conceptRepository.saveConcept(concept);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + concepts.size() + " Concepts gespeichert.");
+    }
 
     public List<ConceptDTO> getAllConcepts() {
         List<ConceptDTO> conceptList = new ArrayList<>();

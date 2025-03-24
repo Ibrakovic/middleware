@@ -3,6 +3,8 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.DrugDTO;
+import com.middleware.repository.DrugRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,12 +12,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DrugService {
 
     private final OpenMRSClient openMRSClient;
+    private final DrugRepository drugRepository;
 
-    public DrugService(OpenMRSClient openMRSClient) {
-        this.openMRSClient = openMRSClient;
+    public void saveDrugsToDatabase(List<DrugDTO> drugs) {
+        for (DrugDTO drug : drugs) {
+            String result = drugRepository.saveDrug(drug);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + drugs.size() + " Drugs gespeichert.");
     }
 
     public List<DrugDTO> getAllDrugs() {

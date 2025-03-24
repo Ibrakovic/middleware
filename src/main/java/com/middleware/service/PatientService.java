@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.PatientDTO;
 import com.middleware.repository.PatientRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PatientService {
 
     private final OpenMRSClient openMRSClient;
     private final PatientRepository patientRepository;
-
-
-    public PatientService(OpenMRSClient openMRSClient, PatientRepository patientRepository) {
-        this.openMRSClient = openMRSClient;
-        this.patientRepository = patientRepository;
-    }
 
     /**
      * Holt alle Patienten von OpenMRS und mapped sie auf PatientDTO-Objekte.

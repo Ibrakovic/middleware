@@ -3,6 +3,7 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.ProgramDTO;
+import com.middleware.repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.UUID;
 public class ProgramService {
 
     private final OpenMRSClient openMRSClient;
+    private final ProgramRepository programRepository;
 
     public List<ProgramDTO> getAllPrograms() {
         List<ProgramDTO> programList = new ArrayList<>();
@@ -37,11 +39,11 @@ public class ProgramService {
                     programList.add(new ProgramDTO(
                             UUID.fromString(program.path("uuid").asText()),
                             program.path("name").asText(),
-                            UUID.fromString(conceptName.path("uuid").asText()),
+                            UUID.fromString(concept.path("uuid").asText()),
                             conceptName.path("name").asText(),
                             conceptDescription != null ? conceptDescription.path("display").asText() : null,
                             outcomesConceptName.path("display").asText(),
-                            outcomesConceptName.path("uuid").asText().isBlank() ? null : UUID.fromString(outcomesConceptName.path("uuid").asText()),
+                            outcomesConcept.path("uuid").asText().isBlank() ? null : UUID.fromString(outcomesConcept.path("uuid").asText()),
                             outcomesConceptDescription != null ? outcomesConceptDescription.path("display").asText() : null
                     ));
                 }
@@ -59,5 +61,13 @@ public class ProgramService {
         }
 
         return programList;
+    }
+
+    public void saveProgramsToDatabase(List<ProgramDTO> programs) {
+        for (ProgramDTO program : programs) {
+            String result = programRepository.saveProgram(program);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + programs.size() + " Programs gespeichert.");
     }
 }
