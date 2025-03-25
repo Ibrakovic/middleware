@@ -2,6 +2,7 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.VisitTypeDTO;
+import com.middleware.repository.VisitTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,15 @@ import java.util.UUID;
 public class VisitTypeService {
 
     private final OpenMRSClient openMRSClient;
+    private final VisitTypeRepository visitTypeRepository;
+
+    public void saveVisitTypesToDatabase(List<VisitTypeDTO> visitTypes) {
+        for (VisitTypeDTO visitType : visitTypes) {
+            String result = visitTypeRepository.saveVisitType(visitType);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + visitTypes.size() + " Besuchstypen gespeichert.");
+    }
 
     public List<VisitTypeDTO> getAllVisitTypes() {
         String endpoint = "visittype?v=full";

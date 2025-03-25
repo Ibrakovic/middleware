@@ -29,7 +29,7 @@ public class ObsController {
 
     @GetMapping("/allPatients")
     public List<ObsDTO> getAllObs() {
-        JsonNode allPatients = patientService.fetchPatients();
+        List<PatientDTO> allPatients = patientService.getAllPatients();
         List<UUID> patientUUIDs = PatientService.getPatientUUIDs(allPatients);
         return obsService.getAllObsForAllPatients(patientUUIDs);
     }

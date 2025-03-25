@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.VisitDTO;
+import com.middleware.repository.VisitRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -11,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,13 +22,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class VisitService {
 
     private final OpenMRSClient openMRSClient;
+    private final VisitRepository visitRepository;
 
-    public VisitService(OpenMRSClient openMRSClient) {
-        this.openMRSClient = openMRSClient;
-        ObjectMapper objectMapper = openMRSClient.getObjectMapper();
+    public void saveVisitsToDatabase(List<VisitDTO> visits) {
+        for (VisitDTO visit : visits) {
+            String result = visitRepository.saveVisit(visit);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + visits.size() + " Besuche gespeichert.");
     }
 
     public List<VisitDTO> getVisitsFromLastHour() {
@@ -95,12 +104,25 @@ public class VisitService {
     private VisitDTO mapJsonToVisitDTO(JsonNode node) {
         VisitDTO dto = new VisitDTO();
         // Grundlegende Felder mappen
-        dto.setUUID(UUID.fromString(node.path("uuid").asText()));
+        dto.setUuid(UUID.fromString(node.path("uuid").asText()));
         dto.setDisplay(node.path("display").asText());
-        dto.setStartDatetime(node.path("startDatetime").asText());
-        dto.setStopDatetime(node.path("stopDatetime").asText());
 
-        // Patient mappen
+        String start = node.path("startDatetime").asText(null);
+        String stop = node.path("stopDatetime").asText(null);
+
+        dto.setStartDatetime(
+                (start != null && !start.equals("null") && !start.isEmpty())
+                        ? OffsetDateTime.parse(start, OPENMRS_DATE_WITH_OFFSET)
+                        : null
+        );
+
+        dto.setStopDatetime(
+                (stop != null && !stop.equals("null") && !stop.isEmpty())
+                        ? OffsetDateTime.parse(stop, OPENMRS_DATE_WITH_OFFSET)
+                        : null
+        );
+
+// Patient mappen
         JsonNode patientNode = node.path("patient");
         if (!patientNode.isMissingNode()) {
             dto.setPatientUUID(UUID.fromString(patientNode.path("uuid").asText()));
@@ -134,9 +156,12 @@ public class VisitService {
             }
             encounterDisplay = encountersNode.get(0).path("display").asText();
         }
-        dto.setEncountersUUID(encounterUUIDs);
+        dto.setEncounterUUID(encounterUUIDs.isEmpty() ? null : encounterUUIDs.get(0));
         dto.setEncounterDisplay(encounterDisplay);
 
         return dto;
     }
+    private static final DateTimeFormatter OPENMRS_DATE_WITH_OFFSET =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
 }

@@ -3,6 +3,7 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.RelationshipTypeDTO;
+import com.middleware.repository.RelationshipTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -13,6 +14,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RelationshipTypeService {
     private final OpenMRSClient openMRSClient;
+    private final RelationshipTypeRepository relationshipTypeRepository;
+
+    public void saveRelationshipTypesToDatabase(List<RelationshipTypeDTO> relationshipTypes) {
+        for (RelationshipTypeDTO relationshipType : relationshipTypes) {
+            String result = relationshipTypeRepository.saveRelationshipType(relationshipType);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + relationshipTypes.size() + " Beziehungstypen gespeichert");
+    }
 
     public List<RelationshipTypeDTO> getAllRelationshipTypes() {
         List<RelationshipTypeDTO> relationshipTypeList = new ArrayList<>();

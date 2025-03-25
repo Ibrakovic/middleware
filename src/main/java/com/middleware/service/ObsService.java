@@ -3,8 +3,12 @@ package com.middleware.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.ObsDTO;
+import com.middleware.repository.ObsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +17,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ObsService {
     private final OpenMRSClient openMRSClient;
+    private final ObsRepository obsRepository;
+
+    private static final DateTimeFormatter OPENMRS_DATE_WITH_OFFSET =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    public void saveObsToDatabase(List<ObsDTO> obses) {
+        for (ObsDTO obs : obses){
+            String result = obsRepository.saveObs(obs);
+            System.out.println(result);
+        }
+        System.out.println("✅ Erfolgreich " + obses.size() + " Obs gespeichert");
+    }
 
     public List<ObsDTO> getObsByPatientUUID(UUID patientUUID) {
         List<ObsDTO> obsList = new ArrayList<>();
@@ -30,7 +46,7 @@ public class ObsService {
                             UUID.fromString(obs.path("uuid").asText()),
                             obs.path("display").asText(),
                             patientUUID,
-                            obs.path("obsDatetime").asText(null),
+                            obs.has("obsDatetime") ? OffsetDateTime.parse(obs.path("obsDatetime").asText(), OPENMRS_DATE_WITH_OFFSET) : null,
                             conceptNode.has("uuid") ? UUID.fromString(conceptNode.path("uuid").asText()) : null,
                             conceptNode.path("name").path("name").asText(null),
                             valueNode.has("uuid") ? UUID.fromString(valueNode.path("uuid").asText()) : null

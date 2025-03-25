@@ -82,16 +82,13 @@ public class PatientService {
 
     /**
      * Extrahiert die UUIDs der Patienten aus einem JSON-Array.
-     * @param patientJson JSON-Array mit Patienten.
+     * @param patients PatientDTO mit Patienten.
      * @return Liste von UUIDs der Patienten.
      */
-    public static List<UUID> getPatientUUIDs( JsonNode patientJson) {
+    public static List<UUID> getPatientUUIDs( List<PatientDTO> patients) {
         List<UUID> patientUUIDs = new ArrayList<>();
-        if (patientJson != null && patientJson.isArray()) {
-            for (JsonNode patient : patientJson) {
-                UUID uuid = UUID.fromString(patient.path("uuid").asText());
-                patientUUIDs.add(uuid);
-            }
+        for (PatientDTO patient : patients) {
+            patientUUIDs.add(patient.getUuid());
         }
         return patientUUIDs;
     }

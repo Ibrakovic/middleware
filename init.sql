@@ -95,7 +95,9 @@ CREATE TABLE visit (
                        visit_location_uuid UUID,
                        visit_location_display VARCHAR(255),
                        start_datetime TIMESTAMP,
-                       stop_datetime TIMESTAMP
+                       stop_datetime TIMESTAMP,
+                        encounter_uuid UUID REFERENCES encounter(uuid) ON DELETE CASCADE,
+                        encounter_display VARCHAR(255)
 );
 
 -- OBS TABLE
