@@ -22,11 +22,20 @@ public class ObsController {
     private final ObsService obsService;
     private final PatientService patientService;
 
+    /**
+     * Get all obs by patient UUID
+     * @param patientUUID UUID of the patient
+     * @return List of Obs of the patient
+     */
     @GetMapping("/{patientUUID}")
     public List<ObsDTO> getObsByPatientUUID(@PathVariable UUID patientUUID) {
         return obsService.getObsByPatientUUID(patientUUID);
     }
 
+    /**
+     * Get all obs for all patients
+     * @return List of Obs of all patients
+     */
     @GetMapping("/allPatients")
     public List<ObsDTO> getAllObs() {
         List<PatientDTO> allPatients = patientService.getAllPatients();

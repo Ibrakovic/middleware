@@ -6,6 +6,7 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.VisitDTO;
 import com.middleware.repository.VisitRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VisitService {
@@ -29,13 +31,19 @@ public class VisitService {
     private final VisitRepository visitRepository;
 
     public void saveVisitsToDatabase(List<VisitDTO> visits) {
+
+        log.info("Besuche speichern beginnt");
         for (VisitDTO visit : visits) {
             String result = visitRepository.saveVisit(visit);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + visits.size() + " Besuche gespeichert.");
+        log.info("Besuche speichern beendet");
     }
 
+    /**
+     * Get all visits from OpenMRS
+     * @return List of VisitDTO
+     */
     public List<VisitDTO> getVisitsFromLastHour() {
         Instant oneHourAgo = Instant.now().minusSeconds(7200);
         String fromStartDate = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -51,14 +59,12 @@ public class VisitService {
                 .queryParam("startIndex", 0)
                 .encode(StandardCharsets.UTF_8);
 
-        System.out.println("Debug"+builder.toUriString());
         String endpoint = builder.toUriString();
         List<VisitDTO> visits = new ArrayList<>();
 
-        // Initialer relativer Endpunkt (ohne BASE_URL, da OpenMRSClient diesen anhängt)
         String nextEndpoint = endpoint;
 
-        // Solange ein "next"-Link vorhanden ist, abarbeiten
+        // If there is a next endpoint, keep fetching data
         while (nextEndpoint != null) {
             JsonNode response = openMRSClient.getForEndpoint(nextEndpoint);
             JsonNode results = response.path("results");
@@ -80,7 +86,7 @@ public class VisitService {
                             System.err.println("Fehler beim Decodieren der URL: " + e.getMessage());
                         }
 
-                        // Falls der Link absolut ist (enthält BASE_URL), entferne diesen Teil
+                        // If the next URL is a full URL, extract the endpoint
                         if (nextUrl.startsWith(OpenMRSClient.BASE_URL)) {
                             nextEndpoint = nextUrl.substring(OpenMRSClient.BASE_URL.length());
                             System.out.println("Debug2: " + nextEndpoint);
@@ -88,7 +94,7 @@ public class VisitService {
                             nextEndpoint = nextUrl;
                         }
 
-                        // Entferne möglichen doppelten Slash
+                        // Double slashes are not allowed in URLs
                         if (nextEndpoint.startsWith("//")) {
                             nextEndpoint = nextEndpoint.substring(1);
                         }
@@ -101,6 +107,11 @@ public class VisitService {
         return visits;
     }
 
+    /**
+     * Maps a JSON node to a VisitDTO object.
+     * @param node JSON node
+     * @return VisitDTO object
+     */
     private VisitDTO mapJsonToVisitDTO(JsonNode node) {
         VisitDTO dto = new VisitDTO();
         // Grundlegende Felder mappen
@@ -122,28 +133,28 @@ public class VisitService {
                         : null
         );
 
-// Patient mappen
+        // Patient mapping
         JsonNode patientNode = node.path("patient");
         if (!patientNode.isMissingNode()) {
             dto.setPatientUUID(UUID.fromString(patientNode.path("uuid").asText()));
             dto.setPatientDisplay(patientNode.path("display").asText());
         }
 
-        // VisitType mappen
+        // VisitType mapping
         JsonNode visitTypeNode = node.path("visitType");
         if (!visitTypeNode.isMissingNode()) {
             dto.setVisitTypeUUID(UUID.fromString(visitTypeNode.path("uuid").asText()));
             dto.setVisitTypeDisplay(visitTypeNode.path("display").asText());
         }
 
-        // Location mappen
+        // Location mapping
         JsonNode locationNode = node.path("location");
         if (!locationNode.isMissingNode()) {
             dto.setVisitLocationUUID(UUID.fromString(locationNode.path("uuid").asText()));
             dto.setVisitLocationDisplay(locationNode.path("display").asText());
         }
 
-        // Encounters mappen: Alle Encounter-UUIDs extrahieren und encounterDisplay anhand des ersten Eintrags setzen
+        // Encounters mapping
         List<UUID> encounterUUIDs = new ArrayList<>();
         String encounterDisplay = "";
         JsonNode encountersNode = node.path("encounters");
@@ -161,6 +172,9 @@ public class VisitService {
 
         return dto;
     }
+    /**
+     * Date format for OpenMRS dates with offset.
+     */
     private static final DateTimeFormatter OPENMRS_DATE_WITH_OFFSET =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 

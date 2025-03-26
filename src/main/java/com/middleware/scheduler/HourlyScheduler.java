@@ -26,10 +26,14 @@ public class HourlyScheduler {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Scheduled(cron = "0 */10 * * * *") // Alle 10 Minuten
-    public void syncFrequent() {
+    /**
+     * Create a scheduled task that runs every hour to sync the data from the OpenMRS API to the database.
+     * The task will run at the beginning of every hour.
+     */
+    @Scheduled(cron = "0 0 * * * * ")
+    public void hourlyFrequent() {
         String now = LocalDateTime.now().format(FORMATTER);
-        log.info("⏰ FrequentScheduler gestartet um: {}", now);
+        log.info("⏰ HourlyScheduler gestartet um: {}", now); //logger
 
         List<PatientDTO> patients = patientService.getAllPatients();
         patientService.savePatientToDatabase(patients);
@@ -50,7 +54,7 @@ public class HourlyScheduler {
         List<ObsDTO> obs = obsService.getAllObsForAllPatients(patientUUIDs);
         obsService.saveObsToDatabase(obs);
 
-        log.info("✅ HourlyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER));
+        log.info("✅ HourlyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
     }
 
 }

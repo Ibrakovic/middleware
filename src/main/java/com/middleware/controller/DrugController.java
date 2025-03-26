@@ -18,7 +18,10 @@ public class DrugController {
 
     private final DrugService drugService;
 
-
+    /**
+     * Get all drugs
+     * @return List of Drugs
+     */
     @GetMapping
     public List<DrugDTO> getAllDrugs() {
 

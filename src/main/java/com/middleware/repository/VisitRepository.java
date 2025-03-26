@@ -13,6 +13,11 @@ public class VisitRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Save a visit to the database
+     * @param visit The visit to save
+     * @return A message indicating the success or failure of the operation
+     */
     public String saveVisit(VisitDTO visit) {
         String sql = """
         INSERT INTO visit (uuid, display, patient_uuid, patient_display, visit_type_uuid, visit_type_display, visit_location_uuid, visit_location_display, start_datetime, stop_datetime, encounter_uuid, encounter_display)

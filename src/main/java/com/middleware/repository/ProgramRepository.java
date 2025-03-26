@@ -13,6 +13,11 @@ public class ProgramRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Save a program to the database
+     * @param program the program to save
+     * @return a message indicating the success or failure of the operation
+     */
     public String saveProgram(ProgramDTO program) {
         String sql = """
         INSERT INTO program (uuid, name, concept_name_uuid, concept_name, concept_description, outcomes_concept_name, outcomes_concept_uuid, outcomes_concept_description)

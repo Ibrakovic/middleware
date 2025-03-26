@@ -15,6 +15,10 @@ public class ProgramController {
 
     private final ProgramService programService;
 
+    /**
+     * Get all programs
+     * @return List of all programs
+     */
     @GetMapping
     public List<ProgramDTO> getAllPrograms() {
         return programService.getAllPrograms();

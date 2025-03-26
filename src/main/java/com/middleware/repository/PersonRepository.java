@@ -20,6 +20,11 @@ public class PersonRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Saves a person to the database.
+     * @param person the person to save
+     * @return a message indicating the success or failure of the operation
+     */
     public String savePerson(PersonDTO person) {
         String sql = """
         INSERT INTO person (uuid, display, gender, age, birthdate)

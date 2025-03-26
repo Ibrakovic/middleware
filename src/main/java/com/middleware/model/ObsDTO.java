@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/*
+* Mandatory fields for recreating Obs
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ObsDTO {
     private UUID uuid;
     private String display;

@@ -5,11 +5,13 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.ProgramDTO;
 import com.middleware.repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProgramService {
@@ -17,10 +19,15 @@ public class ProgramService {
     private final OpenMRSClient openMRSClient;
     private final ProgramRepository programRepository;
 
+    /**
+     * Get all programs from OpenMRS
+     * @return List of ProgramDTO
+     */
     public List<ProgramDTO> getAllPrograms() {
         List<ProgramDTO> programList = new ArrayList<>();
         String nextUrl = "program?v=full";
 
+        // Until there are no more pages left
         while (nextUrl != null) {
             JsonNode body = openMRSClient.getForEndpoint(nextUrl);
             if (body != null && body.has("results")) {
@@ -64,10 +71,12 @@ public class ProgramService {
     }
 
     public void saveProgramsToDatabase(List<ProgramDTO> programs) {
+
+        log.info("Programs speichern beginnt");
         for (ProgramDTO program : programs) {
             String result = programRepository.saveProgram(program);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + programs.size() + " Programs gespeichert.");
+        log.info("Programs speichern beendet");
     }
 }

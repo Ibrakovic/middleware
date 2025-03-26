@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 /*
-* Aus den Demo Daten von OpenMRS wurden die folgenden Attribute für Patienten extrahiert.
-* Diese Attribute werden in der PatientDTO Klasse gespeichert.
+* Mandatory fields for recreating a Patient object
 */
 
 @Data

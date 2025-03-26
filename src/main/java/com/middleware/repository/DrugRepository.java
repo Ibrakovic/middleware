@@ -13,6 +13,11 @@ public class DrugRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Save a drug to the database
+     * @param drug Drug to be saved
+     * @return a message indicating the success or failure of the operation
+     */
     public String saveDrug(DrugDTO drug) {
         String sql = """
         INSERT INTO drug (uuid, name, strength, maximum_daily_dose, minimum_daily_dose, retired, concept_uuid, combination, dosage_form)

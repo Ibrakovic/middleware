@@ -15,6 +15,10 @@ public class ConceptController {
 
     private final ConceptService conceptService;
 
+    /**
+     * Get all concepts
+     * @return List of Concepts
+     */
     @GetMapping
     public List<ConceptDTO> getAllConcepts() {
         return conceptService.getAllConcepts();

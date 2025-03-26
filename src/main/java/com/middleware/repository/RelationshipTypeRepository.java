@@ -13,6 +13,11 @@ public class RelationshipTypeRepository  {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Save a relationship type to the database
+     * @param rel The RelationshipType to save
+     * @return A message indicating the success or failure of the operation
+     */
     public String saveRelationshipType(RelationshipTypeDTO rel) {
         String sql = """
         INSERT INTO relationship_type (uuid, a_is_to_b, b_is_to_a, weight, description, display)

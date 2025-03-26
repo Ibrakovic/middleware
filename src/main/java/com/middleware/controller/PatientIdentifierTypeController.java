@@ -16,6 +16,10 @@ public class PatientIdentifierTypeController {
 
     private final PatientIdentifierTypeService patientIdentifierTypeService;
 
+    /**
+     * Get all patient identifier types
+     * @return List of patient identifier types
+     */
     @GetMapping
     public List<PatientIdentifierTypeDTO> getAllPatientIdentifierTypes() {
         return patientIdentifierTypeService.getAllPatientIdentifierTypes();

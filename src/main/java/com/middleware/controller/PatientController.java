@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/**
- * Controller Klasse um Patientendaten von OpenMRS zu holen.
- */
-
 @RestController
 @RequestMapping("/api/patient")
 @RequiredArgsConstructor
@@ -22,6 +18,10 @@ public class PatientController {
 
     private final PatientService patientService;
 
+    /**
+     * Get all patients
+     * @return List of Patients
+     */
     @GetMapping
     public List<PatientDTO> getAllPatients() {
         return patientService.getAllPatients();

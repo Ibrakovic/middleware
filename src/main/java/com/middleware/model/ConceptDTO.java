@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/*
+ * Mandatory fields for recreating a Concept
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

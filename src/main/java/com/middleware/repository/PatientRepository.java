@@ -19,6 +19,11 @@ public class PatientRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     *  Save a patient to the database.
+     * @param patient The patient to be saved.
+     * @return A message indicating the success or failure of the operation.
+     */
     public String savePatient(PatientDTO patient) {
         String sql = """
     INSERT INTO patient (uuid, display, person_name, gender, age, birthdate)

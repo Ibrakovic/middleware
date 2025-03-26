@@ -6,6 +6,7 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.PatientDTO;
 import com.middleware.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PatientService {
@@ -21,8 +23,8 @@ public class PatientService {
     private final PatientRepository patientRepository;
 
     /**
-     * Holt alle Patienten von OpenMRS und mapped sie auf PatientDTO-Objekte.
-     * @return Liste von PatientDTO-Objekten.
+     * Gets all patients from OpenMRS.
+     * @return List of PatientDTO objects representing the patients.
      */
     public List<PatientDTO> getAllPatients() {
         JsonNode allPatients = fetchPatients();
@@ -33,17 +35,22 @@ public class PatientService {
         return patientDTOs;
     }
 
+    /**
+     * Saves a list of patients to the database.
+     * @param patients List of patients to save.
+     */
     public void savePatientToDatabase(List<PatientDTO> patients) {
+        log.info("Patients speichern beginnt");
         for (PatientDTO patient : patients) {
             String result = patientRepository.savePatient(patient);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + patients.size() + " Patienten gespeichert.");
+        log.info("Patients speichern beendet");
     }
     /**
-     * Mapped die JSON-Daten eines Patienten aus OpenMRS auf ein PatientDTO-Objekt.
-     * @param patientJson JSON-Daten eines Patienten aus OpenMRS.
-     * @return PatientDTO-Objekt mit den gemappten Daten.
+     * Maps JSON data of a patient from OpenMRS to a PatientDTO object.
+     * @param patientJson JSON-Data of a patient from OpenMRS.
+     * @return PatientDTO object representing the patient.
      */
     private PatientDTO mapJsonToPatientDTO(JsonNode patientJson) {
         UUID uuid = UUID.fromString(patientJson.path("uuid").asText());
@@ -81,9 +88,9 @@ public class PatientService {
     }
 
     /**
-     * Extrahiert die UUIDs der Patienten aus einem JSON-Array.
-     * @param patients PatientDTO mit Patienten.
-     * @return Liste von UUIDs der Patienten.
+     * Extracts the UUIDs of the patients from a list of PatientDTOs.
+     * @param patients PatientDTO objects from which to extract the UUIDs.
+     * @return List of UUIDs of the patients.
      */
     public static List<UUID> getPatientUUIDs( List<PatientDTO> patients) {
         List<UUID> patientUUIDs = new ArrayList<>();
@@ -94,11 +101,15 @@ public class PatientService {
     }
 
 
+    /**
+     * Fetches all patients from OpenMRS.
+     * @return JSON array of all patients.
+     */
     public JsonNode fetchPatients() {
         String nextUrl = "patient?q=all&limit=1&v=default";
         ArrayNode allPatients = openMRSClient.getObjectMapper().createArrayNode();
 
-        while (nextUrl != null) {
+        while (nextUrl != null) { // as long as there are more pages of patients to fetch
             JsonNode body = openMRSClient.getForEndpoint(nextUrl);
             if (body == null) {
                 break;

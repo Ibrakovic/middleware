@@ -13,6 +13,11 @@ public class VisitTypeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Saves a visit type to the database
+     * @param visitType The visit type to be saved
+     * @return A message indicating the success or failure of the operation
+     */
     public String saveVisitType(VisitTypeDTO visitType) {
         String sql = """
         INSERT INTO visit_type (uuid, name, description, retired)

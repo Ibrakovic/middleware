@@ -3,6 +3,7 @@ package com.middleware.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import lombok.Data;
 import lombok.Getter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Data
 public class OpenMRSClient {
 
     public static final String BASE_URL = "http://localhost:8082/openmrs-standalone/ws/rest/v1/";
@@ -19,7 +21,6 @@ public class OpenMRSClient {
     private static final String PASSWORD = "test";
 
     private final RestTemplate restTemplate;
-    @Getter
     private final ObjectMapper objectMapper;
 
     public OpenMRSClient() {
@@ -29,9 +30,9 @@ public class OpenMRSClient {
 
 
     /**
-     * Holt die Daten für einen bestimmten Endpunkt von OpenMRS.
-     * @param endpoint
-     * @return
+     * Prepairs the URL for the endpoint and sends a GET request to the OpenMRS API.
+     * @param endpoint The endpoint to send the GET request to.
+     * @return The response from the OpenMRS API.
      */
     public JsonNode getForEndpoint(String endpoint) {
         String url = BASE_URL + endpoint;

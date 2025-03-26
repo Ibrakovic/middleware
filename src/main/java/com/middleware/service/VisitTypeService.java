@@ -4,12 +4,14 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.VisitTypeDTO;
 import com.middleware.repository.VisitTypeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VisitTypeService {
@@ -18,13 +20,19 @@ public class VisitTypeService {
     private final VisitTypeRepository visitTypeRepository;
 
     public void saveVisitTypesToDatabase(List<VisitTypeDTO> visitTypes) {
+
+        log.info("VisitType speichern beginnt");
         for (VisitTypeDTO visitType : visitTypes) {
             String result = visitTypeRepository.saveVisitType(visitType);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + visitTypes.size() + " Besuchstypen gespeichert.");
+        log.info("VisitType speichern beendet");
     }
 
+    /**
+     * Get all visit types from OpenMRS
+     * @return List of VisitTypeDTO
+     */
     public List<VisitTypeDTO> getAllVisitTypes() {
         String endpoint = "visittype?v=full";
         JsonNode body = openMRSClient.getForEndpoint(endpoint);

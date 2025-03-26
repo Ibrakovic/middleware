@@ -16,6 +16,10 @@ public class VisitController {
 
     private final VisitService visitService;
 
+    /**
+     * Get all visits from the last hour
+     * @return List of Visits
+     */
     @GetMapping("/api/visit")
     public List<VisitDTO> getVisitsLastHour() {
         return visitService.getVisitsFromLastHour();

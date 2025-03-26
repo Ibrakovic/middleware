@@ -5,6 +5,7 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.PatientIdentifierTypeDTO;
 import com.middleware.repository.PatientIdentifierTypeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,25 +13,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PatientIdentifierTypeService {
     private final OpenMRSClient openMRSClient;
     private final PatientIdentifierTypeRepository patientIdentifierTypeRepository;
 
+    /**
+     * Save patient identifier types to the database
+     * @param patientIdentifierTypes List of patient identifier types to save
+     */
     public void savePatientIdentifierTypesToDatabase(List<PatientIdentifierTypeDTO> patientIdentifierTypes) {
+        log.info ("PatientIdentifier speichern beginnt");
         for (PatientIdentifierTypeDTO patientIdentifierType : patientIdentifierTypes) {
             String result = patientIdentifierTypeRepository.savePatientIdentifierTypeRepository(patientIdentifierType);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + patientIdentifierTypes.size() + " PatientIdentifierTypes gespeichert.");
+        log.info ("PatientIdentifier speichern beendet");
     }
 
+    /**
+     * Get all patient identifier types from OpenMRS
+     * @return List of PatientIdentifierTypeDTO
+     */
     public List<PatientIdentifierTypeDTO> getAllPatientIdentifierTypes() {
         List<PatientIdentifierTypeDTO> identifierTypeList = new ArrayList<>();
         String nextUrl = "patientidentifiertype?limit=1&v=default&startIndex=0";
 
-        while (nextUrl != null) {
+        while (nextUrl != null) { // as long as there is a next URL to fetch data from OpenMRS
             JsonNode body = openMRSClient.getForEndpoint(nextUrl);
             if (body != null && body.has("results")) {
                 for (JsonNode identifierType : body.get("results")) {

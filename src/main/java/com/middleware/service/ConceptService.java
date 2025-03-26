@@ -5,30 +5,41 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.ConceptDTO;
 import com.middleware.repository.ConceptRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConceptService {
     private final OpenMRSClient openMRSClient;
     private final ConceptRepository conceptRepository;
 
+    /**
+     * Saves a list of ConceptDTO objects to the database.
+     * @param concepts List of ConceptDTO objects to save.
+     */
     public void saveConceptsToDatabase(List<ConceptDTO> concepts) {
+        log.info("Concepts speichern beginnt");
         for (ConceptDTO concept : concepts) {
             String result = conceptRepository.saveConcept(concept);
             System.out.println(result);
         }
-        System.out.println("✅ Erfolgreich " + concepts.size() + " Concepts gespeichert.");
+        log.info("Concepts speichern beendet");
     }
 
+    /**
+     * Retrieves all concepts from OpenMRS.
+     * @return List of ConceptDTO objects representing the concepts.
+     */
     public List<ConceptDTO> getAllConcepts() {
         List<ConceptDTO> conceptList = new ArrayList<>();
         String nextUrl = "concept?term=38341003&source=SNOMED%20CT&limit=1&v=full";
 
-        while (nextUrl != null) {
+        while (nextUrl != null) { // as long as there is a next URL to fetch more concepts from OpenMRS
             JsonNode body = openMRSClient.getForEndpoint(nextUrl);
             if (body != null && body.has("results")) {
                 for (JsonNode concept : body.get("results")) {

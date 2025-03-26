@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- *  Aus den Demo Daten von OpenMRS wurden die folgenden Attribute für Besuche extrahiert.
+ *  Mandatory fields for recreating a visit
  */
 
 @Data

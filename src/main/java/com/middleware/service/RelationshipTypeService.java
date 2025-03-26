@@ -5,11 +5,13 @@ import com.middleware.api.OpenMRSClient;
 import com.middleware.model.RelationshipTypeDTO;
 import com.middleware.repository.RelationshipTypeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RelationshipTypeService {
@@ -17,18 +19,25 @@ public class RelationshipTypeService {
     private final RelationshipTypeRepository relationshipTypeRepository;
 
     public void saveRelationshipTypesToDatabase(List<RelationshipTypeDTO> relationshipTypes) {
+        log.info("RelationshipTypes speichern beginnt");
         for (RelationshipTypeDTO relationshipType : relationshipTypes) {
             String result = relationshipTypeRepository.saveRelationshipType(relationshipType);
             System.out.println(result);
         }
         System.out.println("✅ Erfolgreich " + relationshipTypes.size() + " Beziehungstypen gespeichert");
+        log.info("RelationshipTypes speichern beendet");
     }
 
+    /**
+     * Get all relationship types from OpenMRS
+     * @return List of RelationshipTypeDTO
+     */
     public List<RelationshipTypeDTO> getAllRelationshipTypes() {
         List<RelationshipTypeDTO> relationshipTypeList = new ArrayList<>();
         String nextUrl = "relationshiptype?v=full";
 
-        while (nextUrl != null) {
+
+        while (nextUrl != null) { // Until there are no more pages left
             JsonNode body = openMRSClient.getForEndpoint(nextUrl);
             if (body != null && body.has("results")) {
                 for (JsonNode relationshipType : body.get("results")) {

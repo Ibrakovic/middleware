@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+/**
+ * Mandatory fields for recording a visit type
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

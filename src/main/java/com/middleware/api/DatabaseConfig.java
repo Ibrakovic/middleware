@@ -10,6 +10,11 @@ import javax.sql.DataSource;
 @Configuration
 public class DatabaseConfig {
 
+    /**
+     * This method is used to create a DataSource object that will be used to connect to the database.
+     * @return DataSource object ready to be used to connect to the database.
+     */
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();

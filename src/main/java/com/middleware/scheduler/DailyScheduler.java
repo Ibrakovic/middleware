@@ -24,10 +24,14 @@ public class DailyScheduler {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    @Scheduled(cron = "0 0 * * * *") // Jede volle Stunde
-    public void syncHourly() {
+    /**
+     * Create a scheduled task that runs every day to sync the data from the OpenMRS API to the database.
+     * The task will run at 00:00:00 every day.
+     */
+    @Scheduled(cron = "0 0 0 * * *")
+    public void syncDaily() {
         String now = LocalDateTime.now().format(FORMATTER);
-        log.info("⏰ HourlyScheduler gestartet um: {}", now);
+        log.info("⏰ DailyScheduler gestartet um: {}", now); //logger
 
         List<DrugDTO> drugs = drugService.getAllDrugs();
         drugService.saveDrugsToDatabase(drugs);
@@ -41,7 +45,7 @@ public class DailyScheduler {
         List<VisitDTO> visits = visitService.getVisitsFromLastHour();
         visitService.saveVisitsToDatabase(visits);
 
-        log.info("✅ DailyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER));
+        log.info("✅ DailyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
     }
 
 }

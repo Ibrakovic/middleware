@@ -13,6 +13,11 @@ public class PatientIdentifierTypeRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Save a patient identifier type to the database
+     * @param patientIdentifierType the patient identifier type to save
+     * @return a message indicating the success or failure of the operation
+     */
     public String savePatientIdentifierTypeRepository (PatientIdentifierTypeDTO patientIdentifierType) {
         String sql = """
         INSERT INTO patient_identifier_type (uuid, name, description, format, format_description, required, validator)

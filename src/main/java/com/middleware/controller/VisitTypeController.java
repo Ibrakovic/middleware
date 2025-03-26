@@ -16,6 +16,10 @@ import java.util.List;
 public class VisitTypeController {
     private final VisitTypeService visitTypeService;
 
+    /**
+     * Get all visit types
+     * @return List of visit types
+     */
     @GetMapping
     public List<VisitTypeDTO> getAllVisitTypes() {
         return visitTypeService.getAllVisitTypes();

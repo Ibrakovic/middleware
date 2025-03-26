@@ -17,6 +17,10 @@ public class PersonController {
 
     private final PersonService personService;
 
+    /**
+     * Get all persons
+     * @return List of PersonDTO
+     */
     @GetMapping
     public List<PersonDTO> getAllPersons() {
         return personService.getAllPersons();

@@ -5,6 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.UUID;
 
+/**
+ * Mandatory fields for recreating a relationship type
+ */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

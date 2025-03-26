@@ -15,6 +15,10 @@ public class RelationshipTypeController {
 
     private final RelationshipTypeService relationshipTypeService;
 
+    /**
+     * Get all relationship types
+     * @return List of RelationshipTypes
+     */
     @GetMapping
     public List<RelationshipTypeDTO> getAllRelationshipTypes() {
         return relationshipTypeService.getAllRelationshipTypes();

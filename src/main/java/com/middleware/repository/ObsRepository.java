@@ -13,6 +13,11 @@ public class ObsRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * Saves an Obs to the database
+     * @param obs Obs to save
+     * @return A message indicating the success or failure of the operation
+     */
     public String saveObs(ObsDTO obs) {
         String sql = """
         INSERT INTO obs (uuid, display, patient_uuid, obs_datetime, concept_uuid, concept_name, value_uuid)
