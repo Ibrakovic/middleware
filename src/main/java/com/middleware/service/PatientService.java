@@ -42,11 +42,20 @@ public class PatientService {
     public void savePatientToDatabase(List<PatientDTO> patients) {
         log.info("Patients speichern beginnt");
         for (PatientDTO patient : patients) {
-            String result = patientRepository.savePatient(patient);
-            System.out.println(result);
+            if(patient.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                String result = patientRepository.savePatient(patient);
+                log.info("✅ Patient erfolgreich gespeichert: {}", result);
+            } catch (Exception e) {
+                log.error("❌ Fehler beim Speichern des Patienten {}: {}", patient.getDisplay(), e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des Patienten", e);
+            }
         }
         log.info("Patients speichern beendet");
     }
+
     /**
      * Maps JSON data of a patient from OpenMRS to a PatientDTO object.
      * @param patientJson JSON-Data of a patient from OpenMRS.
@@ -136,5 +145,7 @@ public class PatientService {
 
         return allPatients;
     }
+
+
 
 }

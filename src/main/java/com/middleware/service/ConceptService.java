@@ -24,12 +24,25 @@ public class ConceptService {
      */
     public void saveConceptsToDatabase(List<ConceptDTO> concepts) {
         log.info("Concepts speichern beginnt");
+
         for (ConceptDTO concept : concepts) {
-            String result = conceptRepository.saveConcept(concept);
-            System.out.println(result);
+
+            if (concept.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                conceptRepository.saveConcept(concept);
+                log.info("✅ Concept erfolgreich gespeichert: {}", concept.getUuid());
+            } catch (Exception e) {
+                log.error("❌ Fehler beim Speichern des Concepts {}: {}", concept.getUuid(), e.getMessage(), e);
+                throw new IllegalArgumentException("Fehler beim Speichern des Concepts", e);
+
+            }
         }
+
         log.info("Concepts speichern beendet");
     }
+
 
     /**
      * Retrieves all concepts from OpenMRS.

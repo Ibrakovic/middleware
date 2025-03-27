@@ -6,6 +6,7 @@ import com.middleware.model.ObsDTO;
 import com.middleware.repository.ObsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -33,12 +34,24 @@ public class ObsService {
      */
     public void saveObsToDatabase(List<ObsDTO> obses) {
         log.info("Obs speichern beginnt");
-        for (ObsDTO obs : obses){
-            String result = obsRepository.saveObs(obs);
-            System.out.println(result);
+
+        for (ObsDTO obs : obses) {
+            if (obs.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+
+            try {
+                obsRepository.saveObs(obs);
+                log.info("✅ Obs erfolgreich gespeichert: {}", obs.getUuid());
+            } catch (DataAccessException e) {
+                log.error("❌ Fehler beim Speichern des Obs {}: {}", obs.getUuid(), e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des Obs", e);
+            }
         }
+
         log.info("Obs speichern beendet");
     }
+
 
     /**
      * Retrieves all observations for a patient with the given UUID.

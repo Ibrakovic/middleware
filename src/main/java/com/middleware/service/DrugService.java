@@ -26,9 +26,18 @@ public class DrugService {
      */
     public void saveDrugsToDatabase(List<DrugDTO> drugs) {
         log.info ("Drugs speichern beginnt");
+
         for (DrugDTO drug : drugs) {
-            String result = drugRepository.saveDrug(drug);
-            System.out.println(result);
+            if (drug.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                String result = drugRepository.saveDrug(drug);
+                log.info("✅ Drug erfolgreich gespeichert: {}", drug.getUuid());
+            } catch (Exception e) {
+                log.error("❌ Fehler beim Speichern des Drugs {}: {}", drug.getUuid(), e.getMessage(), e);
+                throw new IllegalArgumentException("Fehler beim Speichern der Drug", e);
+            }
         }
         log.info("Drugs speichern beendet");
     }

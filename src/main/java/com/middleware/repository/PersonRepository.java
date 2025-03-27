@@ -1,5 +1,6 @@
 package com.middleware.repository;
 
+import com.middleware.model.ConceptDTO;
 import com.middleware.model.PersonDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Repository
@@ -68,5 +70,23 @@ public class PersonRepository {
         }
     }
 
+    /**
+     * Retrieves a person by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the person to retrieve.
+     * @return PersonDTO object representing the person.
+     */
+    public PersonDTO findById(UUID uuid) {
+        String sql = """
+                SELECT UUID, DISPLAY, GENDER, AGE, BIRTHDATE
+    FROM person WHERE UUID = ?
+    """;
 
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PersonDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("display"),
+                rs.getString("display"),
+                rs.getInt("age"),
+                rs.getString("birthdate")
+        ), uuid);
+    }
 }

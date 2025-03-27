@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -48,5 +51,27 @@ public class ObsRepository {
                     obs.getValueUuid());
             return "❌ Fehler beim Speichern des Obs " + obs.getDisplay() + ": " + e.getMessage();
         }
+    }
+
+    /**
+     * Retrieves an observation by its UUID.
+     * @param uuid UUID of the observation to retrieve.
+     * @return ObsDTO object representing the observation.
+     */
+    public ObsDTO findById(UUID uuid) {
+        String sql = """
+    SELECT uuid, display, patient_uuid, obs_datetime, concept_uuid, concept_name, value_uuid
+    FROM obs WHERE uuid = ?
+    """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ObsDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("display"),
+                UUID.fromString(rs.getString("patient_uuid")),
+                rs.getObject("obs_datetime", java.time.OffsetDateTime.class),
+                UUID.fromString(rs.getString("concept_uuid")),
+                rs.getString("concept_name"),
+                UUID.fromString(rs.getString("value_uuid"))
+        ), uuid);
     }
 }

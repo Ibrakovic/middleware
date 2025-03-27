@@ -27,8 +27,17 @@ public class PatientIdentifierTypeService {
     public void savePatientIdentifierTypesToDatabase(List<PatientIdentifierTypeDTO> patientIdentifierTypes) {
         log.info ("PatientIdentifier speichern beginnt");
         for (PatientIdentifierTypeDTO patientIdentifierType : patientIdentifierTypes) {
-            String result = patientIdentifierTypeRepository.savePatientIdentifierTypeRepository(patientIdentifierType);
-            System.out.println(result);
+            if (patientIdentifierType.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+
+            try {
+                String message = patientIdentifierTypeRepository.savePatientIdentifierType(patientIdentifierType);
+                log.info("✅ PatientIdentifier erfolgreich gespeichert: {}", message);
+            } catch (Exception e) {
+                log.error("❌ Fehler beim Speichern des PatientIdentifier {}: {}", patientIdentifierType.getName(), e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des PatientIdentifier", e);
+            }
         }
         log.info ("PatientIdentifier speichern beendet");
     }

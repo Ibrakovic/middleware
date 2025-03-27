@@ -39,7 +39,7 @@ public class HourlyScheduler {
         patientService.savePatientToDatabase(patients);
 
         List<PersonDTO> persons = personService.getAllPersons();
-        personService.savePersonsToDatabase(persons);
+        personService.savePersonToDatabase(persons);
 
         List<ProgramDTO> programs = programService.getAllPrograms();
         programService.saveProgramsToDatabase(programs);

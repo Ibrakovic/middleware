@@ -55,7 +55,7 @@ public class PatientRepository {
     }
 
     /**
-     * Konvertiert ein Datum im Format "YYYY-MM-DDTHH:mm:ss" in "YYYY-MM-DD".
+     * Converts a string date to a java.sql.Date object.
      */
     private java.sql.Date formatDate(String date) {
         if (date == null || date.isEmpty()) {
@@ -69,7 +69,28 @@ public class PatientRepository {
             return java.sql.Date.valueOf(localDate);
         } catch (DateTimeParseException e) {
             log.error("❌ Fehler beim Formatieren des Datums: {}", date, e);
-            return null;  // Falls das Datum ungültig ist
+            return null;  // If the date is not in the expected format
         }
+    }
+
+    /**
+     * Retrieves a patient by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the patient to retrieve.
+     * @return PatientDTO object representing the patient.
+     */
+    public PatientDTO findById(UUID uuid) {
+        String sql = """
+    
+                SELECT UUID, DISPLAY, PERSON_NAME, GENDER, AGE, BIRTHDATE
+    FROM PATIENT WHERE UUID = ?
+    """;
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("display"),
+                rs.getString("person_name"),
+                rs.getString("gender"),
+                rs.getInt("age"),
+                rs.getString("birthdate")
+        ), uuid);
     }
 }

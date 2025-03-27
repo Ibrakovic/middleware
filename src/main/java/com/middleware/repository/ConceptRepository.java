@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -46,7 +49,32 @@ public class ConceptRepository {
                     conceptDTO.getConceptClassUuid(), conceptDTO.getConceptClassDescription(),
                     conceptDTO.getDescriptionsUuid(), conceptDTO.getDescriptionsDescription(),
                     conceptDTO.getDatatypeUuid(), conceptDTO.getVersion());
-            return "❌ Fehler beim Speichern des Concepts " + conceptDTO.getName() + ": " + e.getMessage();
+            throw e;
         }
+    }
+
+
+    /**
+     * Retrieves a concept by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the concept to retrieve.
+     * @return ConceptDTO object representing the concept.
+     */
+    public ConceptDTO findById(UUID uuid) {
+        String sql = """
+    SELECT uuid, name, concept_class_name, concept_class_uuid, concept_class_description, descriptions_uuid, descriptions_description, datatype_uuid, version
+    FROM concept WHERE uuid = ?
+    """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ConceptDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("name"),
+                rs.getString("concept_class_name"),
+                UUID.fromString(rs.getString("concept_class_uuid")),
+                rs.getString("concept_class_description"),
+                rs.getObject("descriptions_uuid") != null ? UUID.fromString(rs.getString("descriptions_uuid")) : null,
+                rs.getString("descriptions_description"),
+                rs.getObject("datatype_uuid") != null ? UUID.fromString(rs.getString("datatype_uuid")) : null,
+                rs.getString("version")
+        ), uuid);
     }
 }

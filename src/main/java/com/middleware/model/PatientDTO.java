@@ -24,4 +24,3 @@ public class PatientDTO {
 
 
 }
-//person noch mitnehmen? da aus person wird patient gemacht

@@ -24,11 +24,20 @@ public class PersonService {
      * Save persons to the database
      * @param persons List of persons to save
      */
-    public void savePersonsToDatabase(List<PersonDTO> persons) {
+    public void savePersonToDatabase(List<PersonDTO> persons) {
         log.info("Persons speichern beginnt");
         for (PersonDTO person : persons) {
-            String result = personRepository.savePerson(person);
-            System.out.println(result);
+            if (person.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                personRepository.savePerson(person);
+                log.info("✅ Person erfolgreich gespeichert: {}", person.getUuid());
+            } catch (IllegalArgumentException e) {
+                log.error("❌ Fehler beim Speichern der Person {}: {}", person.getUuid(), e.getMessage(), e);
+                throw new IllegalArgumentException("Fehler beim Speichern der Person", e);
+            }
+
         }
         log.info("Persons speichern beendet");
     }

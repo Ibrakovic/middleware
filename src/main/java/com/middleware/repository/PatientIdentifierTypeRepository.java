@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class PatientIdentifierTypeRepository {
      * @param patientIdentifierType the patient identifier type to save
      * @return a message indicating the success or failure of the operation
      */
-    public String savePatientIdentifierTypeRepository (PatientIdentifierTypeDTO patientIdentifierType) {
+    public String savePatientIdentifierType (PatientIdentifierTypeDTO patientIdentifierType) {
         String sql = """
         INSERT INTO patient_identifier_type (uuid, name, description, format, format_description, required, validator)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -48,5 +50,26 @@ public class PatientIdentifierTypeRepository {
                     patientIdentifierType.getValidator());
             return "❌ Fehler beim Speichern des PatientIdentifierType " + patientIdentifierType.getName() + ": " + e.getMessage();
         }
+    }
+
+    /**
+     * Retrieves a PatientIdentifierType by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the PatientIdentifierType to retrieve.
+     * @return PatientIdentifierTypeDTO object representing the PatientIdentifierTypeDTO.
+     */
+    public PatientIdentifierTypeDTO findById(UUID uuid) {
+        String sql = """
+    SELECT UUID, NAME, DESCRIPTION, FORMAT, FORMAT_DESCRIPTION, REQUIRED, VALIDATOR
+    FROM PATIENT_IDENTIFIER_TYPE WHERE UUID = ?
+    """;
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientIdentifierTypeDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getString("format"),
+                rs.getString("format_description"),
+                rs.getBoolean("required"),
+                rs.getString("validator")
+        ), uuid);
     }
 }
