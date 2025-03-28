@@ -40,10 +40,10 @@ public class DailyScheduler {
         conceptService.saveConceptsToDatabase(concepts);
 
         List<VisitTypeDTO> visitTypes = visitTypeService.getAllVisitTypes();
-        visitTypeService.saveVisitTypesToDatabase(visitTypes);
+        visitTypeService.saveVisitTypeToDatabase(visitTypes);
 
         List<VisitDTO> visits = visitService.getVisitsFromLastHour();
-        visitService.saveVisitsToDatabase(visits);
+        visitService.saveVisitToDatabase(visits);
 
         log.info("✅ DailyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
     }

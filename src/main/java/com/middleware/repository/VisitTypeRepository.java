@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -39,6 +41,30 @@ public class VisitTypeRepository {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}",
                     sql, visitType.getUuid(), visitType.getName(), visitType.getDescription(), visitType.isRetired());
             return "❌ Fehler beim Speichern des Besuchstyps " + visitType.getName() + ": " + e.getMessage();
+        }
+    }
+
+    /**
+     * Retrieves a visit type by its UUID
+     * @param uuid The UUID of the visit type
+     * @return The visit type if found, null otherwise
+     */
+    public VisitTypeDTO findById(UUID uuid) {
+        String sql = """
+        SELECT uuid, name, description, retired
+        FROM visit_type
+        WHERE uuid = ?
+        """;
+        try {
+            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitTypeDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getBoolean("retired")
+            ), uuid);
+        } catch (Exception e) {
+            log.info("Executing SQL: {} with parameters: {}", sql, uuid);
+            return null;
         }
     }
 }

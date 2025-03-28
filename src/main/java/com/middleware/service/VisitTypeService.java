@@ -19,12 +19,20 @@ public class VisitTypeService {
     private final OpenMRSClient openMRSClient;
     private final VisitTypeRepository visitTypeRepository;
 
-    public void saveVisitTypesToDatabase(List<VisitTypeDTO> visitTypes) {
+    public void saveVisitTypeToDatabase(List<VisitTypeDTO> visitTypes) {
 
         log.info("VisitType speichern beginnt");
         for (VisitTypeDTO visitType : visitTypes) {
-            String result = visitTypeRepository.saveVisitType(visitType);
-            System.out.println(result);
+            if(visitType.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                visitTypeRepository.saveVisitType(visitType);
+                log.info("✅ Erfolgreich " + visitTypes.size() + " VisitTypes gespeichert");
+            } catch (IllegalArgumentException e) {
+                log.error("❌ Fehler beim Speichern des VisitTypes: " + e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des VisitTypes: " + e.getMessage());
+            }
         }
         log.info("VisitType speichern beendet");
     }

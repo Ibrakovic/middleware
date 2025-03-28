@@ -70,12 +70,25 @@ public class ProgramService {
         return programList;
     }
 
-    public void saveProgramsToDatabase(List<ProgramDTO> programs) {
+    /**
+     * Save programs to the database
+     * @param programs List of programs to save
+     */
+    public void saveProgramToDatabase(List<ProgramDTO> programs) {
 
         log.info("Programs speichern beginnt");
         for (ProgramDTO program : programs) {
-            String result = programRepository.saveProgram(program);
-            System.out.println(result);
+            if (program.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                programRepository.saveProgram(program);
+                log.info("✅ Program erfolgreich gespeichert: {}", program.getUuid());
+            } catch (IllegalArgumentException e) {
+                log.error("❌ Fehler beim Speichern des Programms {}: {}", program.getUuid(), e.getMessage(), e);
+                throw new IllegalArgumentException("Fehler beim Speichern des Programms", e);
+            }
+
         }
         log.info("Programs speichern beendet");
     }

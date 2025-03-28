@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -50,5 +52,30 @@ public class ProgramRepository {
                     program.getOutcomesConceptUuid(), program.getOutcomesConceptDescription());
             return "❌ Fehler beim Speichern des Programms " + program.getName() + ": " + e.getMessage();
         }
+    }
+
+    /**
+     * Retrieves a program by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the program to retrieve.
+     * @return ProgramDTO object representing the program.
+     */
+    public ProgramDTO findById(UUID uuid) {
+        String sql = """
+                SELECT UUID, NAME, CONCEPT_NAME_UUID, CONCEPT_NAME, CONCEPT_DESCRIPTION, OUTCOMES_CONCEPT_NAME, OUTCOMES_CONCEPT_UUID, OUTCOMES_CONCEPT_DESCRIPTION
+                FROM PROGRAM
+                WHERE UUID = ?
+                """;
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ProgramDTO(
+            UUID.fromString(rs.getString("uuid")),
+            rs.getString("name"),
+            UUID.fromString(rs.getString("concept_name_uuid")),
+            rs.getString("concept_name"),
+            rs.getString("concept_description"),
+            rs.getString("outcomes_concept_name"),
+            UUID.fromString(rs.getString("outcomes_concept_uuid")),
+            rs.getString("outcomes_concept_description")
+        ), uuid);
+
+
     }
 }

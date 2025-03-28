@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -60,4 +64,35 @@ public class VisitRepository {
             return "❌ Fehler beim Speichern des Besuchs " + visit.getDisplay() + ": " + e.getMessage();
         }
     }
+
+    /**
+     * Retrieves a Visit by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the Visit to retrieve.
+     * @return VisitDTO object representing the Visit.
+     */
+    public VisitDTO findById(UUID uuid) {
+        String sql = """
+        SELECT uuid, display, patient_uuid, patient_display, visit_type_uuid, visit_type_display,
+               visit_location_uuid, visit_location_display, start_datetime, stop_datetime,
+               encounter_uuid, encounter_display
+        FROM visit
+        WHERE uuid = ?
+    """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("display"),
+                UUID.fromString(rs.getString("patient_uuid")),
+                rs.getString("patient_display"),
+                UUID.fromString(rs.getString("visit_type_uuid")),
+                rs.getString("visit_type_display"),
+                UUID.fromString(rs.getString("visit_location_uuid")),
+                rs.getString("visit_location_display"),
+                rs.getObject("start_datetime", OffsetDateTime.class),
+                rs.getObject("stop_datetime", OffsetDateTime.class),
+                rs.getString("encounter_uuid") != null ? UUID.fromString(rs.getString("encounter_uuid")) : null,
+                rs.getString("encounter_display")
+        ), uuid);
+    }
+
 }

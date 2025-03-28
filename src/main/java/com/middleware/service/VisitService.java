@@ -1,7 +1,6 @@
 package com.middleware.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.middleware.api.OpenMRSClient;
 import com.middleware.model.VisitDTO;
 import com.middleware.repository.VisitRepository;
@@ -14,7 +13,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -30,12 +28,20 @@ public class VisitService {
     private final OpenMRSClient openMRSClient;
     private final VisitRepository visitRepository;
 
-    public void saveVisitsToDatabase(List<VisitDTO> visits) {
+    public void saveVisitToDatabase(List<VisitDTO> visits) {
 
         log.info("Besuche speichern beginnt");
         for (VisitDTO visit : visits) {
-            String result = visitRepository.saveVisit(visit);
-            System.out.println(result);
+            if (visit.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                visitRepository.saveVisit(visit);
+                log.info("✅ Erfolgreich " + visits.size() + " Besuche gespeichert");
+            } catch (IllegalArgumentException e) {
+                log.error("❌ Fehler beim Speichern des Besuchs: " + e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des Besuchs: " + e.getMessage());
+            }
         }
         log.info("Besuche speichern beendet");
     }

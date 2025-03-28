@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -47,5 +49,27 @@ public class RelationshipTypeRepository  {
                     rel.getWeight(), rel.getDescription(), rel.getDisplay());
             return "❌ Error saving relationship type " + rel.getDisplay() + ": " + e.getMessage();
         }
+    }
+
+    /**
+     * Retrieves a RelationshipType by its UUID. (Needed for testing and can be used for future features)
+     * @param uuid UUID of the RelationshipType to retrieve.
+     * @return RelationshipTypeDTO object representing the RelationshipType.
+     */
+    public RelationshipTypeDTO findById(UUID uuid) {
+        String sql = """
+                SELECT UUID, a_is_to_b, b_is_to_a, weight, description, display
+                FROM relationship_type
+                WHERE uuid = ?
+                """;
+
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new RelationshipTypeDTO(
+                UUID.fromString(rs.getString("uuid")),
+                rs.getString("description"),
+                rs.getString("a_is_to_b"),
+                rs.getString("b_is_to_a"),
+                rs.getInt("weight"),
+                rs.getString("display")
+        ), uuid);
     }
 }

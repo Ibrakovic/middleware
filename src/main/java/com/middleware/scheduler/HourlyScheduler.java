@@ -42,13 +42,13 @@ public class HourlyScheduler {
         personService.savePersonToDatabase(persons);
 
         List<ProgramDTO> programs = programService.getAllPrograms();
-        programService.saveProgramsToDatabase(programs);
+        programService.saveProgramToDatabase(programs);
 
         List<PatientIdentifierTypeDTO> patientIdentifierTypes = patientIdentifierTypeService.getAllPatientIdentifierTypes();
         patientIdentifierTypeService.savePatientIdentifierTypesToDatabase(patientIdentifierTypes);
 
         List<RelationshipTypeDTO> relationshipTypes = relationshipTypeService.getAllRelationshipTypes();
-        relationshipTypeService.saveRelationshipTypesToDatabase(relationshipTypes);
+        relationshipTypeService.saveRelationshipTypeToDatabase(relationshipTypes);
 
         List<UUID> patientUUIDs = PatientService.getPatientUUIDs(patients);
         List<ObsDTO> obs = obsService.getAllObsForAllPatients(patientUUIDs);

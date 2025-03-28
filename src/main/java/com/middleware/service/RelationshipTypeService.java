@@ -18,14 +18,22 @@ public class RelationshipTypeService {
     private final OpenMRSClient openMRSClient;
     private final RelationshipTypeRepository relationshipTypeRepository;
 
-    public void saveRelationshipTypesToDatabase(List<RelationshipTypeDTO> relationshipTypes) {
+    public void saveRelationshipTypeToDatabase(List<RelationshipTypeDTO> relationshipTypes) {
         log.info("RelationshipTypes speichern beginnt");
         for (RelationshipTypeDTO relationshipType : relationshipTypes) {
-            String result = relationshipTypeRepository.saveRelationshipType(relationshipType);
-            System.out.println(result);
+            if (relationshipType.getUuid() == null) {
+                throw new IllegalArgumentException("UUID darf nicht null sein");
+            }
+            try {
+                relationshipTypeRepository.saveRelationshipType(relationshipType);
+                log.info("✅ Erfolgreich " + relationshipTypes.size() + " RelationshipType gespeichert");
+            } catch (IllegalArgumentException e) {
+                log.error("❌ Fehler beim Speichern des RelationshipType: " + e.getMessage());
+                throw new IllegalArgumentException("Fehler beim Speichern des RelationshipType: " + e.getMessage());
+            }
+
         }
-        System.out.println("✅ Erfolgreich " + relationshipTypes.size() + " Beziehungstypen gespeichert");
-        log.info("RelationshipTypes speichern beendet");
+        log.info("RelationshipType speichern beendet");
     }
 
     /**
