@@ -45,12 +45,12 @@ public class PatientRepository {
                     patient.getGender(),
                     patient.getAge(),
                     formatDate(patient.getBirthdate()));
-            return "✅ Patient erfolgreich gespeichert: " + patient.getDisplay();
+            return "✅ Patient erfolgreich gespeichert in die Datenbank in der Cloud: " + patient.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}",
                     sql, patient.getUuid(), patient.getDisplay(), patient.getPersonName(),
                     patient.getGender(), patient.getAge(), patient.getBirthdate());
-            return "❌ Fehler beim Speichern von Patient " + patient.getDisplay() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern von Patient " + patient.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -59,7 +59,7 @@ public class PatientRepository {
      */
     private java.sql.Date formatDate(String date) {
         if (date == null || date.isEmpty()) {
-            return null;  // Falls kein Datum vorhanden ist
+            return null;  // If the date is null or empty, return null
         }
 
         try {
@@ -80,17 +80,26 @@ public class PatientRepository {
      */
     public PatientDTO findById(UUID uuid) {
         String sql = """
-    
-                SELECT UUID, DISPLAY, PERSON_NAME, GENDER, AGE, BIRTHDATE
-    FROM PATIENT WHERE UUID = ?
-    """;
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("display"),
-                rs.getString("person_name"),
-                rs.getString("gender"),
-                rs.getInt("age"),
-                rs.getString("birthdate")
-        ), uuid);
+        SELECT UUID, DISPLAY, PERSON_NAME, GENDER, AGE, BIRTHDATE
+        FROM PATIENT WHERE UUID = ?
+        """;
+
+        try {
+            PatientDTO patient = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("display"),
+                    rs.getString("person_name"),
+                    rs.getString("gender"),
+                    rs.getInt("age"),
+                    rs.getString("birthdate")
+            ), uuid);
+
+            log.info("✅ Patient erfolgreich aus der Datenbank geladen: {}", uuid);
+            return patient;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des Patienten mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
 }

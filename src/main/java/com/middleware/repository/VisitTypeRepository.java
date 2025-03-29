@@ -36,11 +36,11 @@ public class VisitTypeRepository {
                     visitType.getName(),
                     visitType.getDescription(),
                     visitType.isRetired());
-            return "✅ Besuchstyp erfolgreich gespeichert: " + visitType.getName();
+            return "✅ Besuchstyp erfolgreich gespeichert in die Datenbank in der Cloud: " + visitType.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}",
                     sql, visitType.getUuid(), visitType.getName(), visitType.getDescription(), visitType.isRetired());
-            return "❌ Fehler beim Speichern des Besuchstyps " + visitType.getName() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern des Besuchstyps " + visitType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -55,15 +55,21 @@ public class VisitTypeRepository {
         FROM visit_type
         WHERE uuid = ?
         """;
+
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitTypeDTO(
+            VisitTypeDTO visitType = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitTypeDTO(
                     UUID.fromString(rs.getString("uuid")),
                     rs.getString("name"),
                     rs.getString("description"),
                     rs.getBoolean("retired")
             ), uuid);
+
+            log.info("✅ VisitType erfolgreich aus der Datenbank geladen: {}", uuid);
+            return visitType;
+
         } catch (Exception e) {
-            log.info("Executing SQL: {} with parameters: {}", sql, uuid);
+            log.debug("SQL ausgeführt: {} mit Parameter: {}", sql, uuid);
+            log.error("❌ Fehler beim Laden des VisitType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

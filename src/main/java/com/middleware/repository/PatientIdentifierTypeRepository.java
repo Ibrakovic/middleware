@@ -42,13 +42,13 @@ public class PatientIdentifierTypeRepository {
                     patientIdentifierType.getFormatDescription(),
                     patientIdentifierType.isRequired(),
                     patientIdentifierType.getValidator());
-            return "✅ PatientIdentifierType erfolgreich gespeichert: " + patientIdentifierType.getName();
+            return "✅ PatientIdentifierType erfolgreich gespeichert in die Datenbank in der Cloud: " + patientIdentifierType.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}",
                     sql, patientIdentifierType.getUuid(), patientIdentifierType.getName(), patientIdentifierType.getDescription(),
                     patientIdentifierType.getFormat(), patientIdentifierType.getFormatDescription(), patientIdentifierType.isRequired(),
                     patientIdentifierType.getValidator());
-            return "❌ Fehler beim Speichern des PatientIdentifierType " + patientIdentifierType.getName() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern des PatientIdentifierType " + patientIdentifierType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -59,17 +59,28 @@ public class PatientIdentifierTypeRepository {
      */
     public PatientIdentifierTypeDTO findById(UUID uuid) {
         String sql = """
-    SELECT UUID, NAME, DESCRIPTION, FORMAT, FORMAT_DESCRIPTION, REQUIRED, VALIDATOR
-    FROM PATIENT_IDENTIFIER_TYPE WHERE UUID = ?
-    """;
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientIdentifierTypeDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getString("format"),
-                rs.getString("format_description"),
-                rs.getBoolean("required"),
-                rs.getString("validator")
-        ), uuid);
+        SELECT UUID, NAME, DESCRIPTION, FORMAT, FORMAT_DESCRIPTION, REQUIRED, VALIDATOR
+        FROM PATIENT_IDENTIFIER_TYPE WHERE UUID = ?
+        """;
+
+        try {
+            PatientIdentifierTypeDTO identifierType = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new PatientIdentifierTypeDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("format"),
+                    rs.getString("format_description"),
+                    rs.getBoolean("required"),
+                    rs.getString("validator")
+            ), uuid);
+
+            log.info("✅ PatientIdentifierType erfolgreich aus der Datenbank geladen: {}", uuid);
+            return identifierType;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des PatientIdentifierType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
+
 }

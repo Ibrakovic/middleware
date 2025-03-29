@@ -23,7 +23,7 @@ public class ConceptService {
      * @param concepts List of ConceptDTO objects to save.
      */
     public void saveConceptsToDatabase(List<ConceptDTO> concepts) {
-        log.info("Concepts speichern beginnt");
+        log.info("Concepts in die Datenbank speichern beginnt");
 
         for (ConceptDTO concept : concepts) {
 
@@ -32,15 +32,15 @@ public class ConceptService {
             }
             try {
                 conceptRepository.saveConcept(concept);
-                log.info("✅ Concept erfolgreich gespeichert: {}", concept.getUuid());
+                log.info("✅ Concept erfolgreich gespeichert in der Datenbank: {}", concept.getUuid());
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des Concepts {}: {}", concept.getUuid(), e.getMessage(), e);
+                log.error("❌ Fehler beim Speichern des Concepts in die Datenbank {}: {}", concept.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Concepts", e);
 
             }
         }
 
-        log.info("Concepts speichern beendet");
+        log.info("Concepts in die Datenbank speichern beendet");
     }
 
 
@@ -52,45 +52,50 @@ public class ConceptService {
         List<ConceptDTO> conceptList = new ArrayList<>();
         String nextUrl = "concept?term=38341003&source=SNOMED%20CT&limit=1&v=full";
 
-        while (nextUrl != null) { // as long as there is a next URL to fetch more concepts from OpenMRS
-            JsonNode body = openMRSClient.getForEndpoint(nextUrl);
-            if (body != null && body.has("results")) {
-                for (JsonNode concept : body.get("results")) {
-                    JsonNode conceptClass = concept.path("conceptClass");
-                    JsonNode description = concept.path("descriptions").isArray()
-                            ? concept.path("descriptions").get(0)
-                            : null;
-                    JsonNode datatype = concept.path("datatype");
+        try {
+            while (nextUrl != null) {
+                JsonNode body = openMRSClient.getForEndpoint(nextUrl);
+                if (body != null && body.has("results")) {
+                    for (JsonNode concept : body.get("results")) {
+                        JsonNode conceptClass = concept.path("conceptClass");
+                        JsonNode description = concept.path("descriptions").isArray()
+                                ? concept.path("descriptions").get(0)
+                                : null;
+                        JsonNode datatype = concept.path("datatype");
 
-                    conceptList.add(new ConceptDTO(
-                            UUID.fromString(concept.path("uuid").asText()),
-                            concept.path("name").path("name").asText(),
-                            conceptClass.path("name").asText(),
-                            UUID.fromString(conceptClass.path("uuid").asText()),
-                            conceptClass.path("description").asText(),
-                            description != null ? UUID.fromString(description.path("uuid").asText()) : null,
-                            description != null ? description.path("description").asText() : null,
-                            datatype.has("uuid") && !datatype.path("uuid").asText().isBlank()
-                                    ? UUID.fromString(datatype.path("uuid").asText())
-                                    : null,
-                            concept.path("version").asText()
-
-
-                    ));
+                        conceptList.add(new ConceptDTO(
+                                UUID.fromString(concept.path("uuid").asText()),
+                                concept.path("name").path("name").asText(),
+                                conceptClass.path("name").asText(),
+                                UUID.fromString(conceptClass.path("uuid").asText()),
+                                conceptClass.path("description").asText(),
+                                description != null ? UUID.fromString(description.path("uuid").asText()) : null,
+                                description != null ? description.path("description").asText() : null,
+                                datatype.has("uuid") && !datatype.path("uuid").asText().isBlank()
+                                        ? UUID.fromString(datatype.path("uuid").asText())
+                                        : null,
+                                concept.path("version").asText()
+                        ));
+                    }
                 }
-            }
 
-            nextUrl = null;
-            if (body != null && body.has("links")) {
-                for (JsonNode link : body.get("links")) {
-                    if (link.has("rel") && "next".equals(link.get("rel").asText())) {
-                        nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
-                        break;
+                nextUrl = null;
+                if (body != null && body.has("links")) {
+                    for (JsonNode link : body.get("links")) {
+                        if (link.has("rel") && "next".equals(link.get("rel").asText())) {
+                            nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
+                            break;
+                        }
                     }
                 }
             }
+
+            log.info("✅ Concepts erfolgreich von OpenMRS in die Middleware geladen.");
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden der Concepts von OpenMRS: " + e.getMessage(), e);
         }
 
         return conceptList;
     }
+
 }

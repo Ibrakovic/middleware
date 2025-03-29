@@ -47,13 +47,13 @@ public class DrugRepository {
                     drug.getConceptUuid(),
                     drug.isCombination(),
                     drug.getDosageForm());
-            return "✅ Drug erfolgreich gespeichert: " + drug.getName();
+            return "✅ Drug erfolgreich in die Datenbank in der Cloud gespeichert: " + drug.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, drug.getUuid(), drug.getName(), drug.getStrength(),
                     drug.getMaximumDailyDose(), drug.getMinimumDailyDose(), drug.isRetired(),
                     drug.getConceptUuid(), drug.isCombination(), drug.getDosageForm());
-            return "❌ Fehler beim Speichern des Drugs " + drug.getName() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern des Drugs " + drug.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -64,19 +64,30 @@ public class DrugRepository {
      */
     public DrugDTO findById(UUID uuid) {
         String sql = """
-    SELECT uuid, name, strength, maximum_daily_dose, minimum_daily_dose, retired, concept_uuid, combination, dosage_form 
-    FROM drug WHERE uuid = ?
-    """;
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new DrugDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("name"),
-                rs.getString("strength"),
-                rs.getString("maximum_daily_dose"),
-                rs.getString("minimum_daily_dose"),
-                rs.getBoolean("retired"),
-                UUID.fromString(rs.getString("concept_uuid")),
-                rs.getBoolean("combination"),
-                rs.getString("dosage_form")
-        ), uuid);
+        SELECT uuid, name, strength, maximum_daily_dose, minimum_daily_dose, retired, concept_uuid, combination, dosage_form 
+        FROM drug WHERE uuid = ?
+        """;
+
+        try {
+            DrugDTO drug = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new DrugDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("name"),
+                    rs.getString("strength"),
+                    rs.getString("maximum_daily_dose"),
+                    rs.getString("minimum_daily_dose"),
+                    rs.getBoolean("retired"),
+                    UUID.fromString(rs.getString("concept_uuid")),
+                    rs.getBoolean("combination"),
+                    rs.getString("dosage_form")
+            ), uuid);
+
+            log.info("✅ Drug erfolgreich aus der Datenbank geladen: {}", uuid);
+            return drug;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des Drugs mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
+
 }

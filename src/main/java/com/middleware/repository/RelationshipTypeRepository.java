@@ -42,12 +42,12 @@ public class RelationshipTypeRepository  {
                     rel.getDescription(),
                     rel.getDisplay()
                     );
-            return "✅ Relationship type successfully saved: " + rel.getDisplay();
+            return "✅ Relationship type successfully saved in die Datenbank in der Cloud: " + rel.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}",
                     sql, rel.getUuid(), rel.getAIsToB(), rel.getBIsToA(),
                     rel.getWeight(), rel.getDescription(), rel.getDisplay());
-            return "❌ Error saving relationship type " + rel.getDisplay() + ": " + e.getMessage();
+            return "❌ Error saving relationship type " + rel.getUuid() + "in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -58,18 +58,28 @@ public class RelationshipTypeRepository  {
      */
     public RelationshipTypeDTO findById(UUID uuid) {
         String sql = """
-                SELECT UUID, a_is_to_b, b_is_to_a, weight, description, display
-                FROM relationship_type
-                WHERE uuid = ?
-                """;
+        SELECT UUID, a_is_to_b, b_is_to_a, weight, description, display
+        FROM relationship_type
+        WHERE uuid = ?
+        """;
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new RelationshipTypeDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("description"),
-                rs.getString("a_is_to_b"),
-                rs.getString("b_is_to_a"),
-                rs.getInt("weight"),
-                rs.getString("display")
-        ), uuid);
+        try {
+            RelationshipTypeDTO relationshipType = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new RelationshipTypeDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("description"),
+                    rs.getString("a_is_to_b"),
+                    rs.getString("b_is_to_a"),
+                    rs.getInt("weight"),
+                    rs.getString("display")
+            ), uuid);
+
+            log.info("✅ RelationshipType erfolgreich aus der Datenbank geladen: {}", uuid);
+            return relationshipType;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des RelationshipType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
+
 }

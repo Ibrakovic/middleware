@@ -54,14 +54,14 @@ public class VisitRepository {
                     visit.getStopDatetime(),
                     visit.getEncounterUUID() != null ? visit.getEncounterUUID() : null,
                     visit.getEncounterDisplay() != null ? visit.getEncounterDisplay() : null);
-            return "✅ Besuch erfolgreich gespeichert: " + visit.getDisplay();
+            return "✅ Besuch erfolgreich gespeichert in die Datenbank in der Cloud: " + visit.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, visit.getUuid(), visit.getDisplay(), visit.getPatientUUID(), visit.getPatientDisplay(),
                     visit.getVisitTypeUUID(), visit.getVisitTypeDisplay(), visit.getVisitLocationUUID(),
                     visit.getVisitLocationDisplay(), visit.getStartDatetime(), visit.getStopDatetime(),
                     visit.getEncounterUUID(), visit.getEncounterDisplay());
-            return "❌ Fehler beim Speichern des Besuchs " + visit.getDisplay() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern des Besuchs " + visit.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -77,22 +77,32 @@ public class VisitRepository {
                encounter_uuid, encounter_display
         FROM visit
         WHERE uuid = ?
-    """;
+        """;
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("display"),
-                UUID.fromString(rs.getString("patient_uuid")),
-                rs.getString("patient_display"),
-                UUID.fromString(rs.getString("visit_type_uuid")),
-                rs.getString("visit_type_display"),
-                UUID.fromString(rs.getString("visit_location_uuid")),
-                rs.getString("visit_location_display"),
-                rs.getObject("start_datetime", OffsetDateTime.class),
-                rs.getObject("stop_datetime", OffsetDateTime.class),
-                rs.getString("encounter_uuid") != null ? UUID.fromString(rs.getString("encounter_uuid")) : null,
-                rs.getString("encounter_display")
-        ), uuid);
+        try {
+            VisitDTO visit = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new VisitDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("display"),
+                    UUID.fromString(rs.getString("patient_uuid")),
+                    rs.getString("patient_display"),
+                    UUID.fromString(rs.getString("visit_type_uuid")),
+                    rs.getString("visit_type_display"),
+                    UUID.fromString(rs.getString("visit_location_uuid")),
+                    rs.getString("visit_location_display"),
+                    rs.getObject("start_datetime", OffsetDateTime.class),
+                    rs.getObject("stop_datetime", OffsetDateTime.class),
+                    rs.getString("encounter_uuid") != null ? UUID.fromString(rs.getString("encounter_uuid")) : null,
+                    rs.getString("encounter_display")
+            ), uuid);
+
+            log.info("✅ Visit erfolgreich aus der Datenbank geladen: {}", uuid);
+            return visit;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des Visit mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
+
 
 }

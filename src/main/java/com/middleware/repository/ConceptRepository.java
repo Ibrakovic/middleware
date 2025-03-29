@@ -42,14 +42,14 @@ public class ConceptRepository {
                     conceptDTO.getDescriptionsDescription(),
                     conceptDTO.getDatatypeUuid(),
                     conceptDTO.getVersion());
-            return "✅ Concept erfolgreich gespeichert: " + conceptDTO.getName();
+            return "✅ Concept erfolgreich in die Datenbank in der Cloud gespeichert: " + conceptDTO.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, conceptDTO.getUuid(), conceptDTO.getName(), conceptDTO.getConceptClassName(),
                     conceptDTO.getConceptClassUuid(), conceptDTO.getConceptClassDescription(),
                     conceptDTO.getDescriptionsUuid(), conceptDTO.getDescriptionsDescription(),
                     conceptDTO.getDatatypeUuid(), conceptDTO.getVersion());
-            throw e;
+            return "❌ Fehler beim Speichern des Concept " + conceptDTO.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -61,20 +61,30 @@ public class ConceptRepository {
      */
     public ConceptDTO findById(UUID uuid) {
         String sql = """
-    SELECT uuid, name, concept_class_name, concept_class_uuid, concept_class_description, descriptions_uuid, descriptions_description, datatype_uuid, version
-    FROM concept WHERE uuid = ?
-    """;
+        SELECT uuid, name, concept_class_name, concept_class_uuid, concept_class_description, descriptions_uuid, descriptions_description, datatype_uuid, version
+        FROM concept WHERE uuid = ?
+        """;
 
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ConceptDTO(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("name"),
-                rs.getString("concept_class_name"),
-                UUID.fromString(rs.getString("concept_class_uuid")),
-                rs.getString("concept_class_description"),
-                rs.getObject("descriptions_uuid") != null ? UUID.fromString(rs.getString("descriptions_uuid")) : null,
-                rs.getString("descriptions_description"),
-                rs.getObject("datatype_uuid") != null ? UUID.fromString(rs.getString("datatype_uuid")) : null,
-                rs.getString("version")
-        ), uuid);
+        try {
+            ConceptDTO concept = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ConceptDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("name"),
+                    rs.getString("concept_class_name"),
+                    UUID.fromString(rs.getString("concept_class_uuid")),
+                    rs.getString("concept_class_description"),
+                    rs.getObject("descriptions_uuid") != null ? UUID.fromString(rs.getString("descriptions_uuid")) : null,
+                    rs.getString("descriptions_description"),
+                    rs.getObject("datatype_uuid") != null ? UUID.fromString(rs.getString("datatype_uuid")) : null,
+                    rs.getString("version")
+            ), uuid);
+
+            log.info("✅ Concept erfolgreich aus der Datenbank geladen: {}", uuid);
+            return concept;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des Concepts mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
+
 }

@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -29,21 +28,23 @@ public class VisitService {
     private final VisitRepository visitRepository;
 
     public void saveVisitToDatabase(List<VisitDTO> visits) {
+        log.info("Visits speichern beginnt");
 
-        log.info("Besuche speichern beginnt");
         for (VisitDTO visit : visits) {
             if (visit.getUuid() == null) {
                 throw new IllegalArgumentException("UUID darf nicht null sein");
             }
+
             try {
                 visitRepository.saveVisit(visit);
-                log.info("✅ Erfolgreich " + visits.size() + " Besuche gespeichert");
+                log.info("✅ Visit erfolgreich gespeichert in der Datenbank: {}", visit.getUuid());
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern des Besuchs: " + e.getMessage());
-                throw new IllegalArgumentException("Fehler beim Speichern des Besuchs: " + e.getMessage());
+                log.error("❌ Fehler beim Speichern des Visit in die Datenbank {}: {}", visit.getUuid(), e.getMessage(), e);
+                throw new IllegalArgumentException("Fehler beim Speichern des Visit", e);
             }
         }
-        log.info("Besuche speichern beendet");
+
+        log.info("Visits speichern beendet");
     }
 
     /**
@@ -51,65 +52,67 @@ public class VisitService {
      * @return List of VisitDTO
      */
     public List<VisitDTO> getVisitsFromLastHour() {
-        Instant oneHourAgo = Instant.now().minusSeconds(7200);
-        String fromStartDate = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .withZone(ZoneOffset.UTC)
-                .format(oneHourAgo);
-
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("visit")
-                .queryParam("includeInactive", true)
-                .queryParam("fromStartDate", fromStartDate)
-                .queryParam("v", "default")
-                .queryParam("limit", 1)
-                .queryParam("startIndex", 0)
-                .encode(StandardCharsets.UTF_8);
-
-        String endpoint = builder.toUriString();
         List<VisitDTO> visits = new ArrayList<>();
+        try {
+            Instant oneHourAgo = Instant.now().minusSeconds(7200);
+            String fromStartDate = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                    .withZone(ZoneOffset.UTC)
+                    .format(oneHourAgo);
 
-        String nextEndpoint = endpoint;
+            UriComponentsBuilder builder = UriComponentsBuilder.fromPath("visit")
+                    .queryParam("includeInactive", true)
+                    .queryParam("fromStartDate", fromStartDate)
+                    .queryParam("v", "default")
+                    .queryParam("limit", 1)
+                    .queryParam("startIndex", 0)
+                    .encode(StandardCharsets.UTF_8);
 
-        // If there is a next endpoint, keep fetching data
-        while (nextEndpoint != null) {
-            JsonNode response = openMRSClient.getForEndpoint(nextEndpoint);
-            JsonNode results = response.path("results");
-            if (results.isArray()) {
-                for (JsonNode node : results) {
-                    visits.add(mapJsonToVisitDTO(node));
+            String endpoint = builder.toUriString();
+            String nextEndpoint = endpoint;
+
+            while (nextEndpoint != null) {
+                JsonNode response = openMRSClient.getForEndpoint(nextEndpoint);
+                JsonNode results = response.path("results");
+                if (results.isArray()) {
+                    for (JsonNode node : results) {
+                        visits.add(mapJsonToVisitDTO(node));
+                    }
                 }
-            }
 
-            nextEndpoint = null;
-            JsonNode links = response.path("links");
-            if (links.isArray()) {
-                for (JsonNode link : links) {
-                    if ("next".equals(link.path("rel").asText())) {
-                        String nextUrl = link.path("uri").asText();
-                        try {
-                            nextUrl = URLDecoder.decode(nextUrl, StandardCharsets.UTF_8);
-                        } catch (Exception e) {
-                            System.err.println("Fehler beim Decodieren der URL: " + e.getMessage());
+                nextEndpoint = null;
+                JsonNode links = response.path("links");
+                if (links.isArray()) {
+                    for (JsonNode link : links) {
+                        if ("next".equals(link.path("rel").asText())) {
+                            String nextUrl = link.path("uri").asText();
+                            try {
+                                nextUrl = URLDecoder.decode(nextUrl, StandardCharsets.UTF_8);
+                            } catch (Exception e) {
+                                log.error("❌ Fehler beim Decodieren der URL: {}", e.getMessage(), e);
+                            }
+
+                            if (nextUrl.startsWith(OpenMRSClient.BASE_URL)) {
+                                nextEndpoint = nextUrl.substring(OpenMRSClient.BASE_URL.length());
+                                log.debug("Nächste Seite: {}", nextEndpoint);
+                            } else {
+                                nextEndpoint = nextUrl;
+                            }
+
+                            if (nextEndpoint.startsWith("//")) {
+                                nextEndpoint = nextEndpoint.substring(1);
+                            }
+
+                            break;
                         }
-
-                        // If the next URL is a full URL, extract the endpoint
-                        if (nextUrl.startsWith(OpenMRSClient.BASE_URL)) {
-                            nextEndpoint = nextUrl.substring(OpenMRSClient.BASE_URL.length());
-                            System.out.println("Debug2: " + nextEndpoint);
-                        } else {
-                            nextEndpoint = nextUrl;
-                        }
-
-                        // Double slashes are not allowed in URLs
-                        if (nextEndpoint.startsWith("//")) {
-                            nextEndpoint = nextEndpoint.substring(1);
-                        }
-
-                        break;
                     }
                 }
             }
+
+            log.info("✅ Visit erfolgreich von OpenMRS in die Middleware geladen.");
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden der Visit von OpenMRS: {}", e.getMessage(), e);
         }
+
         return visits;
     }
 
@@ -120,7 +123,6 @@ public class VisitService {
      */
     private VisitDTO mapJsonToVisitDTO(JsonNode node) {
         VisitDTO dto = new VisitDTO();
-        // Grundlegende Felder mappen
         dto.setUuid(UUID.fromString(node.path("uuid").asText()));
         dto.setDisplay(node.path("display").asText());
 
@@ -139,28 +141,24 @@ public class VisitService {
                         : null
         );
 
-        // Patient mapping
         JsonNode patientNode = node.path("patient");
         if (!patientNode.isMissingNode()) {
             dto.setPatientUUID(UUID.fromString(patientNode.path("uuid").asText()));
             dto.setPatientDisplay(patientNode.path("display").asText());
         }
 
-        // VisitType mapping
         JsonNode visitTypeNode = node.path("visitType");
         if (!visitTypeNode.isMissingNode()) {
             dto.setVisitTypeUUID(UUID.fromString(visitTypeNode.path("uuid").asText()));
             dto.setVisitTypeDisplay(visitTypeNode.path("display").asText());
         }
 
-        // Location mapping
         JsonNode locationNode = node.path("location");
         if (!locationNode.isMissingNode()) {
             dto.setVisitLocationUUID(UUID.fromString(locationNode.path("uuid").asText()));
             dto.setVisitLocationDisplay(locationNode.path("display").asText());
         }
 
-        // Encounters mapping
         List<UUID> encounterUUIDs = new ArrayList<>();
         String encounterDisplay = "";
         JsonNode encountersNode = node.path("encounters");
@@ -173,15 +171,16 @@ public class VisitService {
             }
             encounterDisplay = encountersNode.get(0).path("display").asText();
         }
+
         dto.setEncounterUUID(encounterUUIDs.isEmpty() ? null : encounterUUIDs.get(0));
         dto.setEncounterDisplay(encounterDisplay);
 
         return dto;
     }
+
     /**
      * Date format for OpenMRS dates with offset.
      */
     private static final DateTimeFormatter OPENMRS_DATE_WITH_OFFSET =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
 }

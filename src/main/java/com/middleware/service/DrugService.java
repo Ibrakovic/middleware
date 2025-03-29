@@ -21,11 +21,11 @@ public class DrugService {
     private final DrugRepository drugRepository;
 
     /**
-     * Save drugs to the database
-     * @param drugs List of drugs to be saved
+     * Saves a list of DrugDTOs to the database.
+     * @param drugs List of drugs to be saved.
      */
     public void saveDrugsToDatabase(List<DrugDTO> drugs) {
-        log.info ("Drugs speichern beginnt");
+        log.info("Drugs in die Datenbank speichern beginnt");
 
         for (DrugDTO drug : drugs) {
             if (drug.getUuid() == null) {
@@ -33,56 +33,64 @@ public class DrugService {
             }
             try {
                 String result = drugRepository.saveDrug(drug);
-                log.info("✅ Drug erfolgreich gespeichert: {}", drug.getUuid());
+                log.info("✅ Drug erfolgreich gespeichert in die Datenbank: {}", drug.getUuid());
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des Drugs {}: {}", drug.getUuid(), e.getMessage(), e);
+                log.error("❌ Fehler beim Speichern des Drug in die Datenbank  {}: {}", drug.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern der Drug", e);
             }
         }
-        log.info("Drugs speichern beendet");
+
+        log.info("Drugs in die Datenbank speichern beendet");
     }
 
     /**
-     * Get all drugs from OpenMRS
-     * @return List of all drugs
+     * Retrieves all drugs from OpenMRS.
+     * @return List of all DrugDTOs.
      */
     public List<DrugDTO> getAllDrugs() {
+        log.info("Datenabruf aller Drugs von OpenMRS beginnt");
         String nextUrl = "drug?v=full";
         List<DrugDTO> allDrugs = new ArrayList<>();
 
-        while (nextUrl != null) { // as long as there is a next URL to fetch more data from OpenMRS
-            JsonNode body = openMRSClient.getForEndpoint(nextUrl);
+        try {
+            while (nextUrl != null) {
+                JsonNode body = openMRSClient.getForEndpoint(nextUrl);
 
-            if (body != null && body.has("results")) {
-                for (JsonNode drug : body.get("results")) {
-                    JsonNode conceptNode = drug.path("concept");
-                    UUID conceptUuid = conceptNode.has("uuid") && !conceptNode.path("uuid").asText().isBlank()
-                            ? UUID.fromString(conceptNode.path("uuid").asText())
-                            : null;
+                if (body != null && body.has("results")) {
+                    for (JsonNode drug : body.get("results")) {
+                        JsonNode conceptNode = drug.path("concept");
+                        UUID conceptUuid = conceptNode.has("uuid") && !conceptNode.path("uuid").asText().isBlank()
+                                ? UUID.fromString(conceptNode.path("uuid").asText())
+                                : null;
 
-                    allDrugs.add(new DrugDTO(
-                            UUID.fromString(drug.path("uuid").asText()),
-                            drug.path("name").asText(null),
-                            drug.path("strength").asText(null),
-                            drug.path("maximumDailyDose").asText(null),
-                            drug.path("minimumDailyDose").asText(null),
-                            drug.path("retired").asBoolean(false),
-                            conceptUuid,
-                            drug.path("combination").asBoolean(false),
-                            drug.path("dosageForm").asText(null)
-                    ));
+                        allDrugs.add(new DrugDTO(
+                                UUID.fromString(drug.path("uuid").asText()),
+                                drug.path("name").asText(null),
+                                drug.path("strength").asText(null),
+                                drug.path("maximumDailyDose").asText(null),
+                                drug.path("minimumDailyDose").asText(null),
+                                drug.path("retired").asBoolean(false),
+                                conceptUuid,
+                                drug.path("combination").asBoolean(false),
+                                drug.path("dosageForm").asText(null)
+                        ));
+                    }
                 }
-            }
 
-            nextUrl = null;
-            if (body != null && body.has("links")) {
-                for (JsonNode link : body.get("links")) {
-                    if (link.has("rel") && "next".equals(link.get("rel").asText())) {
-                        nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
-                        break;
+                nextUrl = null;
+                if (body != null && body.has("links")) {
+                    for (JsonNode link : body.get("links")) {
+                        if (link.has("rel") && "next".equals(link.get("rel").asText())) {
+                            nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
+                            break;
+                        }
                     }
                 }
             }
+
+            log.info("✅ Drug erfolgreich von OpenMRS in die Middleware geladen.");
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden der Drug von OpenMRS: {}", e.getMessage(), e);
         }
 
         return allDrugs;

@@ -6,7 +6,6 @@ import com.middleware.model.PatientIdentifierTypeDTO;
 import com.middleware.repository.PatientIdentifierTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,60 +20,68 @@ public class PatientIdentifierTypeService {
     private final PatientIdentifierTypeRepository patientIdentifierTypeRepository;
 
     /**
-     * Save patient identifier types to the database
-     * @param patientIdentifierTypes List of patient identifier types to save
+     * Saves a list of PatientIdentifierTypeDTOs to the database.
+     * @param patientIdentifierTypes List of identifier types.
      */
     public void savePatientIdentifierTypesToDatabase(List<PatientIdentifierTypeDTO> patientIdentifierTypes) {
-        log.info ("PatientIdentifier speichern beginnt");
+        log.info("PatientIdentifier in die Datenbank speichern beginnt");
+
         for (PatientIdentifierTypeDTO patientIdentifierType : patientIdentifierTypes) {
             if (patientIdentifierType.getUuid() == null) {
                 throw new IllegalArgumentException("UUID darf nicht null sein");
             }
 
             try {
-                String message = patientIdentifierTypeRepository.savePatientIdentifierType(patientIdentifierType);
-                log.info("✅ PatientIdentifier erfolgreich gespeichert: {}", message);
+                patientIdentifierTypeRepository.savePatientIdentifierType(patientIdentifierType);
+                log.info("✅ PatientIdentifier erfolgreich gespeichert in der Datenbank: {}", patientIdentifierType.getUuid());
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des PatientIdentifier {}: {}", patientIdentifierType.getName(), e.getMessage());
+                log.error("❌ Fehler beim Speichern des PatientIdentifier in die Datenbank {}: {}", patientIdentifierType.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des PatientIdentifier", e);
             }
         }
-        log.info ("PatientIdentifier speichern beendet");
+
+        log.info("PatientIdentifier in die Datenbank speichern beendet");
     }
 
     /**
-     * Get all patient identifier types from OpenMRS
-     * @return List of PatientIdentifierTypeDTO
+     * Retrieves all patient identifier types from OpenMRS.
+     * @return List of PatientIdentifierTypeDTOs.
      */
     public List<PatientIdentifierTypeDTO> getAllPatientIdentifierTypes() {
         List<PatientIdentifierTypeDTO> identifierTypeList = new ArrayList<>();
         String nextUrl = "patientidentifiertype?limit=1&v=default&startIndex=0";
 
-        while (nextUrl != null) { // as long as there is a next URL to fetch data from OpenMRS
-            JsonNode body = openMRSClient.getForEndpoint(nextUrl);
-            if (body != null && body.has("results")) {
-                for (JsonNode identifierType : body.get("results")) {
-                    identifierTypeList.add(new PatientIdentifierTypeDTO(
-                            UUID.fromString(identifierType.path("uuid").asText()),
-                            identifierType.path("name").asText(),
-                            identifierType.path("description").asText(),
-                            identifierType.path("format").asText(null),
-                            identifierType.path("formatDescription").asText(null),
-                            identifierType.path("required").asBoolean(false),
-                            identifierType.path("validator").asText(null)
-                    ));
+        try {
+            while (nextUrl != null) {
+                JsonNode body = openMRSClient.getForEndpoint(nextUrl);
+                if (body != null && body.has("results")) {
+                    for (JsonNode identifierType : body.get("results")) {
+                        identifierTypeList.add(new PatientIdentifierTypeDTO(
+                                UUID.fromString(identifierType.path("uuid").asText()),
+                                identifierType.path("name").asText(),
+                                identifierType.path("description").asText(),
+                                identifierType.path("format").asText(null),
+                                identifierType.path("formatDescription").asText(null),
+                                identifierType.path("required").asBoolean(false),
+                                identifierType.path("validator").asText(null)
+                        ));
+                    }
                 }
-            }
 
-            nextUrl = null;
-            if (body != null && body.has("links")) {
-                for (JsonNode link : body.get("links")) {
-                    if (link.has("rel") && "next".equals(link.get("rel").asText())) {
-                        nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
-                        break;
+                nextUrl = null;
+                if (body != null && body.has("links")) {
+                    for (JsonNode link : body.get("links")) {
+                        if (link.has("rel") && "next".equals(link.get("rel").asText())) {
+                            nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
+                            break;
+                        }
                     }
                 }
             }
+
+            log.info("✅ Patient Identifier Types erfolgreich von OpenMRS in die Middleware geladen.");
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden der Patient Identifier Types von OpenMRS: {}", e.getMessage(), e);
         }
 
         return identifierTypeList;

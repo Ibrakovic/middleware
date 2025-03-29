@@ -25,23 +25,21 @@ public class PersonService {
      * @param persons List of persons to save
      */
     public void savePersonToDatabase(List<PersonDTO> persons) {
-        log.info("Persons speichern beginnt");
+        log.info("Persons in die Datenbank speichern beginnt");
         for (PersonDTO person : persons) {
             if (person.getUuid() == null) {
                 throw new IllegalArgumentException("UUID darf nicht null sein");
             }
             try {
                 personRepository.savePerson(person);
-                log.info("✅ Person erfolgreich gespeichert: {}", person.getUuid());
+                log.info("✅ Person erfolgreich gespeichert in der Datenbank: {}", person.getUuid());
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern der Person {}: {}", person.getUuid(), e.getMessage(), e);
+                log.error("❌ Fehler beim Speichern der Person in die Datenbank {}: {}", person.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern der Person", e);
             }
-
         }
-        log.info("Persons speichern beendet");
+        log.info("Persons in die Datenbank speichern beendet");
     }
-
 
     /**
      * Get all persons from OpenMRS
@@ -51,31 +49,36 @@ public class PersonService {
         List<PersonDTO> personList = new ArrayList<>();
         String nextUrl = "person?q=all&limit=1&v=default&startIndex=0";
 
-        while (nextUrl != null) { // as long as there is a next URL fetch the data
-            JsonNode body = openMRSClient.getForEndpoint(nextUrl);
+        try {
+            while (nextUrl != null) {
+                JsonNode body = openMRSClient.getForEndpoint(nextUrl);
 
-            if (body != null && body.has("results")) {
-                for (JsonNode person : body.get("results")) {
-
-                    personList.add(new PersonDTO(
-                            UUID.fromString(person.path("uuid").asText()),
-                            person.path("display").asText(),
-                            person.path("gender").asText(),
-                            person.path("age").asInt(),
-                            person.path("birthdate").asText()
-                    ));
+                if (body != null && body.has("results")) {
+                    for (JsonNode person : body.get("results")) {
+                        personList.add(new PersonDTO(
+                                UUID.fromString(person.path("uuid").asText()),
+                                person.path("display").asText(),
+                                person.path("gender").asText(),
+                                person.path("age").asInt(),
+                                person.path("birthdate").asText()
+                        ));
+                    }
                 }
-            }
 
-            nextUrl = null;
-            if (body != null && body.has("links")) {
-                for (JsonNode link : body.get("links")) {
-                    if (link.has("rel") && "next".equals(link.get("rel").asText())) {
-                        nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
-                        break;
+                nextUrl = null;
+                if (body != null && body.has("links")) {
+                    for (JsonNode link : body.get("links")) {
+                        if (link.has("rel") && "next".equals(link.get("rel").asText())) {
+                            nextUrl = link.get("uri").asText().replace(OpenMRSClient.BASE_URL, "");
+                            break;
+                        }
                     }
                 }
             }
+
+            log.info("✅ Personen erfolgreich von OpenMRS in die Middleware geladen.");
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden der Personen von OpenMRS: {}", e.getMessage(), e);
         }
 
         return personList;

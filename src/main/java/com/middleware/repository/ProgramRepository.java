@@ -44,13 +44,13 @@ public class ProgramRepository {
                     program.getOutcomesConceptName(),
                     program.getOutcomesConceptUuid(),
                     program.getOutcomesConceptDescription());
-            return "✅ Program erfolgreich gespeichert: " + program.getName();
+            return "✅ Program erfolgreich in die Datenbank in der Cloud gespeichert: " + program.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, program.getUuid(), program.getName(), program.getConceptNameUuid(),
                     program.getConceptName(), program.getConceptDescription(), program.getOutcomesConceptName(),
                     program.getOutcomesConceptUuid(), program.getOutcomesConceptDescription());
-            return "❌ Fehler beim Speichern des Programms " + program.getName() + ": " + e.getMessage();
+            return "❌ Fehler beim Speichern des Programms " + program.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -61,21 +61,29 @@ public class ProgramRepository {
      */
     public ProgramDTO findById(UUID uuid) {
         String sql = """
-                SELECT UUID, NAME, CONCEPT_NAME_UUID, CONCEPT_NAME, CONCEPT_DESCRIPTION, OUTCOMES_CONCEPT_NAME, OUTCOMES_CONCEPT_UUID, OUTCOMES_CONCEPT_DESCRIPTION
-                FROM PROGRAM
-                WHERE UUID = ?
-                """;
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ProgramDTO(
-            UUID.fromString(rs.getString("uuid")),
-            rs.getString("name"),
-            UUID.fromString(rs.getString("concept_name_uuid")),
-            rs.getString("concept_name"),
-            rs.getString("concept_description"),
-            rs.getString("outcomes_concept_name"),
-            UUID.fromString(rs.getString("outcomes_concept_uuid")),
-            rs.getString("outcomes_concept_description")
-        ), uuid);
+            SELECT UUID, NAME, CONCEPT_NAME_UUID, CONCEPT_NAME, CONCEPT_DESCRIPTION, OUTCOMES_CONCEPT_NAME, OUTCOMES_CONCEPT_UUID, OUTCOMES_CONCEPT_DESCRIPTION
+            FROM PROGRAM
+            WHERE UUID = ?
+            """;
 
+        try {
+            ProgramDTO program = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new ProgramDTO(
+                    UUID.fromString(rs.getString("uuid")),
+                    rs.getString("name"),
+                    UUID.fromString(rs.getString("concept_name_uuid")),
+                    rs.getString("concept_name"),
+                    rs.getString("concept_description"),
+                    rs.getString("outcomes_concept_name"),
+                    UUID.fromString(rs.getString("outcomes_concept_uuid")),
+                    rs.getString("outcomes_concept_description")
+            ), uuid);
 
+            log.info("✅ Program erfolgreich aus der Datenbank geladen: {}", uuid);
+            return program;
+
+        } catch (Exception e) {
+            log.error("❌ Fehler beim Laden des Program mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            return null;
+        }
     }
 }
