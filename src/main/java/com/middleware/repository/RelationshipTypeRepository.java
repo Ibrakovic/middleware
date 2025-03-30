@@ -3,7 +3,10 @@ package com.middleware.repository;
 import com.middleware.model.RelationshipTypeDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -20,6 +23,11 @@ public class RelationshipTypeRepository  {
      * @param rel The RelationshipType to save
      * @return A message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String saveRelationshipType(RelationshipTypeDTO rel) {
         String sql = """
         INSERT INTO relationship_type (uuid, a_is_to_b, b_is_to_a, weight, description, display)
@@ -56,6 +64,11 @@ public class RelationshipTypeRepository  {
      * @param uuid UUID of the RelationshipType to retrieve.
      * @return RelationshipTypeDTO object representing the RelationshipType.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public RelationshipTypeDTO findById(UUID uuid) {
         String sql = """
         SELECT UUID, a_is_to_b, b_is_to_a, weight, description, display

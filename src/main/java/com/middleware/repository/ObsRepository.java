@@ -3,7 +3,10 @@ package com.middleware.repository;
 import com.middleware.model.ObsDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,6 +24,11 @@ public class ObsRepository {
      * @param obs Obs to save
      * @return A message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String saveObs(ObsDTO obs) {
         String sql = """
         INSERT INTO obs (uuid, display, patient_uuid, obs_datetime, concept_uuid, concept_name, value_uuid)
@@ -58,6 +66,11 @@ public class ObsRepository {
      * @param uuid UUID of the observation to retrieve.
      * @return ObsDTO object representing the observation.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public ObsDTO findById(UUID uuid) {
         String sql = """
         SELECT uuid, display, patient_uuid, obs_datetime, concept_uuid, concept_name, value_uuid

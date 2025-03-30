@@ -3,7 +3,10 @@ package com.middleware.repository;
 import com.middleware.model.PatientIdentifierTypeDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -20,6 +23,11 @@ public class PatientIdentifierTypeRepository {
      * @param patientIdentifierType the patient identifier type to save
      * @return a message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String savePatientIdentifierType (PatientIdentifierTypeDTO patientIdentifierType) {
         String sql = """
         INSERT INTO patient_identifier_type (uuid, name, description, format, format_description, required, validator)
@@ -57,6 +65,11 @@ public class PatientIdentifierTypeRepository {
      * @param uuid UUID of the PatientIdentifierType to retrieve.
      * @return PatientIdentifierTypeDTO object representing the PatientIdentifierTypeDTO.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public PatientIdentifierTypeDTO findById(UUID uuid) {
         String sql = """
         SELECT UUID, NAME, DESCRIPTION, FORMAT, FORMAT_DESCRIPTION, REQUIRED, VALIDATOR

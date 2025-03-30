@@ -4,7 +4,10 @@ import com.middleware.model.ConceptDTO;
 import com.middleware.model.DrugDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -21,6 +24,11 @@ public class DrugRepository {
      * @param drug Drug to be saved
      * @return a message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String saveDrug(DrugDTO drug) {
         String sql = """
         INSERT INTO drug (uuid, name, strength, maximum_daily_dose, minimum_daily_dose, retired, concept_uuid, combination, dosage_form)
@@ -62,6 +70,11 @@ public class DrugRepository {
      * @param uuid UUID of the drug to retrieve.
      * @return DrugDTO object representing the drug.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public DrugDTO findById(UUID uuid) {
         String sql = """
         SELECT uuid, name, strength, maximum_daily_dose, minimum_daily_dose, retired, concept_uuid, combination, dosage_form 

@@ -3,7 +3,10 @@ package com.middleware.repository;
 import com.middleware.model.VisitTypeDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -20,6 +23,11 @@ public class VisitTypeRepository {
      * @param visitType The visit type to be saved
      * @return A message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String saveVisitType(VisitTypeDTO visitType) {
         String sql = """
         INSERT INTO visit_type (uuid, name, description, retired)
@@ -49,6 +57,11 @@ public class VisitTypeRepository {
      * @param uuid The UUID of the visit type
      * @return The visit type if found, null otherwise
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public VisitTypeDTO findById(UUID uuid) {
         String sql = """
         SELECT uuid, name, description, retired

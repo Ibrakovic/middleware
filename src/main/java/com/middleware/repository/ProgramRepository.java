@@ -3,7 +3,10 @@ package com.middleware.repository;
 import com.middleware.model.ProgramDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
@@ -20,6 +23,11 @@ public class ProgramRepository {
      * @param program the program to save
      * @return a message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String saveProgram(ProgramDTO program) {
         String sql = """
         INSERT INTO program (uuid, name, concept_name_uuid, concept_name, concept_description, outcomes_concept_name, outcomes_concept_uuid, outcomes_concept_description)
@@ -59,6 +67,11 @@ public class ProgramRepository {
      * @param uuid UUID of the program to retrieve.
      * @return ProgramDTO object representing the program.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public ProgramDTO findById(UUID uuid) {
         String sql = """
             SELECT UUID, NAME, CONCEPT_NAME_UUID, CONCEPT_NAME, CONCEPT_DESCRIPTION, OUTCOMES_CONCEPT_NAME, OUTCOMES_CONCEPT_UUID, OUTCOMES_CONCEPT_DESCRIPTION

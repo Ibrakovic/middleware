@@ -58,7 +58,7 @@ public class ObsService {
      * @return List of observations.
      */
     public List<ObsDTO> getObsByPatientUUID(UUID patientUUID) {
-        log.info("Datenabruf der Beobachtungen für Patient {} beginnt", patientUUID);
+        log.info("Datenabruf der Obs für Patient {} beginnt", patientUUID);
         List<ObsDTO> obsList = new ArrayList<>();
         String nextUrl = "obs?patient=" + patientUUID + "&limit=1&startIndex=0&v=full";
 

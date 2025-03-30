@@ -4,7 +4,10 @@ import com.middleware.model.ConceptDTO;
 import com.middleware.model.PersonDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -27,6 +30,11 @@ public class PersonRepository {
      * @param person the person to save
      * @return a message indicating the success or failure of the operation
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public String savePerson(PersonDTO person) {
         String sql = """
         INSERT INTO person (uuid, display, gender, age, birthdate)
@@ -80,6 +88,11 @@ public class PersonRepository {
      * @param uuid UUID of the person to retrieve.
      * @return PersonDTO object representing the person.
      */
+    @Retryable(
+            retryFor = { DataAccessException.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 300000L) // 5 Minuten
+    )
     public PersonDTO findById(UUID uuid) {
         String sql = """
         SELECT UUID, DISPLAY, GENDER, AGE, BIRTHDATE
