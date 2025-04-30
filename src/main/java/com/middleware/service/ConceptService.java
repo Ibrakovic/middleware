@@ -31,10 +31,10 @@ public class ConceptService {
                 throw new IllegalArgumentException("UUID darf nicht null sein");
             }
             try {
-                conceptRepository.saveConcept(concept);
-                log.info("✅ Concept erfolgreich gespeichert in der Datenbank: {}", concept.getUuid());
+                String result = conceptRepository.saveConcept(concept);
+                log.info(result);
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des Concepts in die Datenbank {}: {}", concept.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Concepts in die Datenbank {}: {}", concept.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Concepts", e);
 
             }
@@ -90,9 +90,9 @@ public class ConceptService {
                 }
             }
 
-            log.info("✅ Concepts erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Concepts erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Concepts von OpenMRS: " + e.getMessage(), e);
+            log.error("Fehler beim Laden der Concepts von OpenMRS: " + e.getMessage(), e);
         }
 
         return conceptList;

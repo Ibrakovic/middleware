@@ -68,9 +68,9 @@ public class ProgramService {
                 }
             }
 
-            log.info("✅ Programs erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Programs erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Programs von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der Programs von OpenMRS: {}", e.getMessage(), e);
         }
 
         return programList;
@@ -89,10 +89,10 @@ public class ProgramService {
             }
 
             try {
-                programRepository.saveProgram(program);
-                log.info("✅ Program erfolgreich gespeichert in der Datenbank: {}", program.getUuid());
+                String result = programRepository.saveProgram(program);
+                log.info(result);
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern des Programs in die Datenbank {}: {}", program.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Programs in die Datenbank {}: {}", program.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Programs", e);
             }
         }

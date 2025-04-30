@@ -31,7 +31,7 @@ public class DailyScheduler {
     @Scheduled(cron = "0 0 0 * * *")
     public void syncDaily() {
         String now = LocalDateTime.now().format(FORMATTER);
-        log.info("⏰ DailyScheduler gestartet um: {}", now); //logger
+        log.info("DailyScheduler gestartet um: {}", now); //logger
 
         List<DrugDTO> drugs = drugService.getAllDrugs();
         drugService.saveDrugsToDatabase(drugs);
@@ -45,7 +45,7 @@ public class DailyScheduler {
         List<VisitDTO> visits = visitService.getVisitsFromLastHour();
         visitService.saveVisitToDatabase(visits);
 
-        log.info("✅ DailyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
+        log.info("DailyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
     }
 
 }

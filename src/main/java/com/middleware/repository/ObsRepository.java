@@ -51,13 +51,13 @@ public class ObsRepository {
                     obs.getConceptUuid(),
                     obs.getConceptName(),
                     obs.getValueUuid());
-            return "✅ Obs erfolgreich in die Datenbank in der Cloud gespeichert: " + obs.getDisplay();
+            return "Obs erfolgreich in die Datenbank in der Cloud gespeichert: " + obs.getDisplay();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}",
                     sql, obs.getUuid(), obs.getDisplay(), obs.getPatientUuid(),
                     obs.getObsDatetime(), obs.getConceptUuid(), obs.getConceptName(),
                     obs.getValueUuid());
-            return "❌ Fehler beim Speichern des Obs " + obs.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Obs " + obs.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -88,11 +88,11 @@ public class ObsRepository {
                     UUID.fromString(rs.getString("value_uuid"))
             ), uuid);
 
-            log.info("✅ Obs erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Obs erfolgreich aus der Datenbank geladen: {}", uuid);
             return obs;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Obs mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Obs mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

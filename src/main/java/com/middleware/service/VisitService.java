@@ -36,10 +36,10 @@ public class VisitService {
             }
 
             try {
-                visitRepository.saveVisit(visit);
-                log.info("✅ Visit erfolgreich gespeichert in der Datenbank: {}", visit.getUuid());
+                String result = visitRepository.saveVisit(visit);
+                log.info(result);
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern des Visit in die Datenbank {}: {}", visit.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Visit in die Datenbank {}: {}", visit.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Visit", e);
             }
         }
@@ -88,7 +88,7 @@ public class VisitService {
                             try {
                                 nextUrl = URLDecoder.decode(nextUrl, StandardCharsets.UTF_8);
                             } catch (Exception e) {
-                                log.error("❌ Fehler beim Decodieren der URL: {}", e.getMessage(), e);
+                                log.error("Fehler beim Decodieren der URL: {}", e.getMessage(), e);
                             }
 
                             if (nextUrl.startsWith(OpenMRSClient.BASE_URL)) {
@@ -108,9 +108,9 @@ public class VisitService {
                 }
             }
 
-            log.info("✅ Visit erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Visit erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Visit von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der Visit von OpenMRS: {}", e.getMessage(), e);
         }
 
         return visits;

@@ -33,7 +33,7 @@ public class HourlyScheduler {
     @Scheduled(cron = "0 0 * * * * ")
     public void hourlyFrequent() {
         String now = LocalDateTime.now().format(FORMATTER);
-        log.info("⏰ HourlyScheduler gestartet um: {}", now); //logger
+        log.info("HourlyScheduler gestartet um: {}", now); //logger
 
         List<PatientDTO> patients = patientService.getAllPatients();
         patientService.savePatientToDatabase(patients);
@@ -54,7 +54,7 @@ public class HourlyScheduler {
         List<ObsDTO> obs = obsService.getAllObsForAllPatients(patientUUIDs);
         obsService.saveObsToDatabase(obs);
 
-        log.info("✅ HourlyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
+        log.info("HourlyScheduler abgeschlossen um: {}", LocalDateTime.now().format(FORMATTER)); //logger
     }
 
 }

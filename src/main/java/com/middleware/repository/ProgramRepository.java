@@ -52,13 +52,13 @@ public class ProgramRepository {
                     program.getOutcomesConceptName(),
                     program.getOutcomesConceptUuid(),
                     program.getOutcomesConceptDescription());
-            return "✅ Program erfolgreich in die Datenbank in der Cloud gespeichert: " + program.getName();
+            return "Program erfolgreich in die Datenbank in der Cloud gespeichert: " + program.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, program.getUuid(), program.getName(), program.getConceptNameUuid(),
                     program.getConceptName(), program.getConceptDescription(), program.getOutcomesConceptName(),
                     program.getOutcomesConceptUuid(), program.getOutcomesConceptDescription());
-            return "❌ Fehler beim Speichern des Programms " + program.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Programms " + program.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -91,11 +91,11 @@ public class ProgramRepository {
                     rs.getString("outcomes_concept_description")
             ), uuid);
 
-            log.info("✅ Program erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Program erfolgreich aus der Datenbank geladen: {}", uuid);
             return program;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Program mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Program mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

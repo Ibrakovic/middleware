@@ -41,10 +41,10 @@ public class ObsService {
             }
 
             try {
-                obsRepository.saveObs(obs);
-                log.info("✅ Obs erfolgreich in der Datenbank gespeichert: {}", obs.getUuid());
+                String result = obsRepository.saveObs(obs);
+                log.info(result);
             } catch (DataAccessException e) {
-                log.error("❌ Fehler beim Speichern des Obs in die Datenbank {}: {}", obs.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Obs in die Datenbank {}: {}", obs.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Obs", e);
             }
         }
@@ -94,9 +94,9 @@ public class ObsService {
                 }
             }
 
-            log.info("✅ Obs erfolgreich von OpenMRS in die Middleware geladen für Patient {}", patientUUID);
+            log.info("Obs erfolgreich von OpenMRS in die Middleware geladen für Patient {}", patientUUID);
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Obs von OpenMRS für Patient {}: {}", patientUUID, e.getMessage(), e);
+            log.error("Fehler beim Laden der Obs von OpenMRS für Patient {}: {}", patientUUID, e.getMessage(), e);
         }
 
         return obsList;
@@ -116,9 +116,9 @@ public class ObsService {
                 allObs.addAll(getObsByPatientUUID(uuid));
             }
 
-            log.info("✅ Alle Obs erfolgreich für alle Patienten geladen.");
+            log.info("Alle Obs erfolgreich für alle Patienten geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Abrufen der Obs für alle Patienten: {}", e.getMessage(), e);
+            log.error("Fehler beim Abrufen der Obs für alle Patienten: {}", e.getMessage(), e);
         }
 
         return allObs;

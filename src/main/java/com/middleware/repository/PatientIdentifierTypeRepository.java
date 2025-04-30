@@ -50,13 +50,13 @@ public class PatientIdentifierTypeRepository {
                     patientIdentifierType.getFormatDescription(),
                     patientIdentifierType.isRequired(),
                     patientIdentifierType.getValidator());
-            return "✅ PatientIdentifierType erfolgreich gespeichert in die Datenbank in der Cloud: " + patientIdentifierType.getUuid();
+            return "PatientIdentifierType erfolgreich gespeichert in die Datenbank in der Cloud: " + patientIdentifierType.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}",
                     sql, patientIdentifierType.getUuid(), patientIdentifierType.getName(), patientIdentifierType.getDescription(),
                     patientIdentifierType.getFormat(), patientIdentifierType.getFormatDescription(), patientIdentifierType.isRequired(),
                     patientIdentifierType.getValidator());
-            return "❌ Fehler beim Speichern des PatientIdentifierType " + patientIdentifierType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des PatientIdentifierType " + patientIdentifierType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -87,11 +87,11 @@ public class PatientIdentifierTypeRepository {
                     rs.getString("validator")
             ), uuid);
 
-            log.info("✅ PatientIdentifierType erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("PatientIdentifierType erfolgreich aus der Datenbank geladen: {}", uuid);
             return identifierType;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des PatientIdentifierType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des PatientIdentifierType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

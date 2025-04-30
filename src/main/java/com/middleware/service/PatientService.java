@@ -32,9 +32,9 @@ public class PatientService {
             for (JsonNode patient : allPatients) {
                 patientDTOs.add(mapJsonToPatientDTO(patient));
             }
-            log.info("✅ Patienten erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Patients erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Abrufen der Patienten von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Abrufen der Patients von OpenMRS: {}", e.getMessage(), e);
         }
         return patientDTOs;
     }
@@ -51,9 +51,9 @@ public class PatientService {
             }
             try {
                 String result = patientRepository.savePatient(patient);
-                log.info("✅ Patient erfolgreich gespeichert in der Datenbank: {}", result);
+                log.info(result);
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des Patienten in die Datenbank {}: {}", patient.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Patients in die Datenbank {}: {}", patient.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des Patienten", e);
             }
         }
@@ -80,7 +80,7 @@ public class PatientService {
 
             return new PatientDTO(uuid, identifier, personName, gender, age, birthdate);
         } catch (Exception e) {
-            log.error("❌ Fehler beim Umwandeln eines Patienten-JSON in PatientDTO: {}", e.getMessage(), e);
+            log.error("Fehler beim Umwandeln eines Patienten-JSON in PatientDTO: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -104,7 +104,7 @@ public class PatientService {
             }
             return display;
         } catch (Exception e) {
-            log.error("❌ Fehler beim Extrahieren des Identifiers aus dem Display-String: {}", e.getMessage(), e);
+            log.error("Fehler beim Extrahieren des Identifiers aus dem Display-String: {}", e.getMessage(), e);
             return "";
         }
     }
@@ -121,7 +121,7 @@ public class PatientService {
                 patientUUIDs.add(patient.getUuid());
             }
         } catch (Exception e) {
-            log.error("❌ Fehler beim Extrahieren der UUIDs aus der Patientenliste: {}", e.getMessage(), e);
+            log.error("Fehler beim Extrahieren der UUIDs aus der Patientenliste: {}", e.getMessage(), e);
         }
         return patientUUIDs;
     }
@@ -160,7 +160,7 @@ public class PatientService {
                 }
             }
         } catch (Exception e) {
-            log.error("❌ Fehler beim Abrufen der Patienten von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Abrufen der Patienten von OpenMRS: {}", e.getMessage(), e);
         }
 
         return allPatients;

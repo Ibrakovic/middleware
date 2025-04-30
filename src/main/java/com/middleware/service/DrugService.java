@@ -33,9 +33,9 @@ public class DrugService {
             }
             try {
                 String result = drugRepository.saveDrug(drug);
-                log.info("✅ Drug erfolgreich gespeichert in die Datenbank: {}", drug.getUuid());
+                log.info(result);
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des Drug in die Datenbank  {}: {}", drug.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des Drug in die Datenbank  {}: {}", drug.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern der Drug", e);
             }
         }
@@ -88,9 +88,9 @@ public class DrugService {
                 }
             }
 
-            log.info("✅ Drug erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Drug erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Drug von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der Drug von OpenMRS: {}", e.getMessage(), e);
         }
 
         return allDrugs;

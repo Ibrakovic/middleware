@@ -55,7 +55,7 @@ public class OpenMRSClient {
 
     @Recover
     public JsonNode recover(Exception e, String endpoint) {
-        System.out.println("❌ Fehler beim Abrufen der Daten von OpenMRS: " + e.getMessage());
+        System.out.println("Fehler beim Abrufen der Daten von OpenMRS: " + e.getMessage());
         return null;
     }
 }

@@ -62,14 +62,14 @@ public class VisitRepository {
                     visit.getStopDatetime(),
                     visit.getEncounterUUID() != null ? visit.getEncounterUUID() : null,
                     visit.getEncounterDisplay() != null ? visit.getEncounterDisplay() : null);
-            return "✅ Besuch erfolgreich gespeichert in die Datenbank in der Cloud: " + visit.getUuid();
+            return "Besuch erfolgreich gespeichert in die Datenbank in der Cloud: " + visit.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, visit.getUuid(), visit.getDisplay(), visit.getPatientUUID(), visit.getPatientDisplay(),
                     visit.getVisitTypeUUID(), visit.getVisitTypeDisplay(), visit.getVisitLocationUUID(),
                     visit.getVisitLocationDisplay(), visit.getStartDatetime(), visit.getStopDatetime(),
                     visit.getEncounterUUID(), visit.getEncounterDisplay());
-            return "❌ Fehler beim Speichern des Besuchs " + visit.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Besuchs " + visit.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -108,11 +108,11 @@ public class VisitRepository {
                     rs.getString("encounter_display")
             ), uuid);
 
-            log.info("✅ Visit erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Visit erfolgreich aus der Datenbank geladen: {}", uuid);
             return visit;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Visit mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Visit mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

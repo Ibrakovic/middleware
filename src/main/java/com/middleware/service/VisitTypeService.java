@@ -33,10 +33,10 @@ public class VisitTypeService {
             }
 
             try {
-                visitTypeRepository.saveVisitType(visitType);
-                log.info("✅ VisitType erfolgreich gespeichert in der Datenbank: {}", visitType.getUuid());
+                String result = visitTypeRepository.saveVisitType(visitType);
+                log.info(result);
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern des VisitType in die Datenbank {}: {}", visitType.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des VisitType in die Datenbank {}: {}", visitType.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des VisitType", e);
             }
         }
@@ -66,9 +66,9 @@ public class VisitTypeService {
                 }
             }
 
-            log.info("✅ VisitTypes erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("VisitTypes erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der VisitTypes von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der VisitTypes von OpenMRS: {}", e.getMessage(), e);
         }
 
         return visitTypes;

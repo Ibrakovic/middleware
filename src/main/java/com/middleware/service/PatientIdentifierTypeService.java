@@ -32,10 +32,10 @@ public class PatientIdentifierTypeService {
             }
 
             try {
-                patientIdentifierTypeRepository.savePatientIdentifierType(patientIdentifierType);
-                log.info("✅ PatientIdentifier erfolgreich gespeichert in der Datenbank: {}", patientIdentifierType.getUuid());
+                String result = patientIdentifierTypeRepository.savePatientIdentifierType(patientIdentifierType);
+                log.info(result);
             } catch (Exception e) {
-                log.error("❌ Fehler beim Speichern des PatientIdentifier in die Datenbank {}: {}", patientIdentifierType.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des PatientIdentifier in die Datenbank {}: {}", patientIdentifierType.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des PatientIdentifier", e);
             }
         }
@@ -79,9 +79,9 @@ public class PatientIdentifierTypeService {
                 }
             }
 
-            log.info("✅ Patient Identifier Types erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Patient Identifier Types erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Patient Identifier Types von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der Patient Identifier Types von OpenMRS: {}", e.getMessage(), e);
         }
 
         return identifierTypeList;

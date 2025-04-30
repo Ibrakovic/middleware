@@ -44,11 +44,11 @@ public class VisitTypeRepository {
                     visitType.getName(),
                     visitType.getDescription(),
                     visitType.isRetired());
-            return "✅ Besuchstyp erfolgreich gespeichert in die Datenbank in der Cloud: " + visitType.getUuid();
+            return "Besuchstyp erfolgreich gespeichert in die Datenbank in der Cloud: " + visitType.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}",
                     sql, visitType.getUuid(), visitType.getName(), visitType.getDescription(), visitType.isRetired());
-            return "❌ Fehler beim Speichern des Besuchstyps " + visitType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Besuchstyps " + visitType.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -77,12 +77,12 @@ public class VisitTypeRepository {
                     rs.getBoolean("retired")
             ), uuid);
 
-            log.info("✅ VisitType erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("VisitType erfolgreich aus der Datenbank geladen: {}", uuid);
             return visitType;
 
         } catch (Exception e) {
             log.debug("SQL ausgeführt: {} mit Parameter: {}", sql, uuid);
-            log.error("❌ Fehler beim Laden des VisitType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des VisitType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

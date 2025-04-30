@@ -55,14 +55,14 @@ public class ConceptRepository {
                     conceptDTO.getDescriptionsDescription(),
                     conceptDTO.getDatatypeUuid(),
                     conceptDTO.getVersion());
-            return "✅ Concept erfolgreich in die Datenbank in der Cloud gespeichert: " + conceptDTO.getName();
+            return "Concept erfolgreich in die Datenbank in der Cloud gespeichert: " + conceptDTO.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, conceptDTO.getUuid(), conceptDTO.getName(), conceptDTO.getConceptClassName(),
                     conceptDTO.getConceptClassUuid(), conceptDTO.getConceptClassDescription(),
                     conceptDTO.getDescriptionsUuid(), conceptDTO.getDescriptionsDescription(),
                     conceptDTO.getDatatypeUuid(), conceptDTO.getVersion());
-            return "❌ Fehler beim Speichern des Concept " + conceptDTO.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Concept " + conceptDTO.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -96,11 +96,11 @@ public class ConceptRepository {
                     rs.getString("version")
             ), uuid);
 
-            log.info("✅ Concept erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Concept erfolgreich aus der Datenbank geladen: {}", uuid);
             return concept;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Concepts mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Concepts mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

@@ -28,10 +28,10 @@ public class RelationshipTypeService {
             }
 
             try {
-                relationshipTypeRepository.saveRelationshipType(relationshipType);
-                log.info("✅ RelationshipType erfolgreich gespeichert in der Datenbank: {}", relationshipType.getUuid());
+                String result = relationshipTypeRepository.saveRelationshipType(relationshipType);
+                log.info(result);
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern des RelationshipType in die Datenbank {}: {}", relationshipType.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern des RelationshipType in die Datenbank {}: {}", relationshipType.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern des RelationshipType", e);
             }
         }
@@ -74,9 +74,9 @@ public class RelationshipTypeService {
                 }
             }
 
-            log.info("✅ RelationshipTypes erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("RelationshipTypes erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der RelationshipTypes von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der RelationshipTypes von OpenMRS: {}", e.getMessage(), e);
         }
 
         return relationshipTypeList;

@@ -19,7 +19,7 @@ public class OpenmrsOpenelisMiddlewareApplication {
 	@Bean
 	CommandLineRunner run() {
 		return args -> {
-			System.out.println("✅ System läuft. Scheduler übernimmt die Synchronisation.");
+			System.out.println("System läuft. Scheduler übernimmt die Synchronisation.");
 		};
 	}
 }

@@ -55,13 +55,13 @@ public class DrugRepository {
                     drug.getConceptUuid(),
                     drug.isCombination(),
                     drug.getDosageForm());
-            return "✅ Drug erfolgreich in die Datenbank in der Cloud gespeichert: " + drug.getName();
+            return "Drug erfolgreich in die Datenbank in der Cloud gespeichert: " + drug.getName();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}, {}, {}, {}",
                     sql, drug.getUuid(), drug.getName(), drug.getStrength(),
                     drug.getMaximumDailyDose(), drug.getMinimumDailyDose(), drug.isRetired(),
                     drug.getConceptUuid(), drug.isCombination(), drug.getDosageForm());
-            return "❌ Fehler beim Speichern des Drugs " + drug.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern des Drugs " + drug.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -94,11 +94,11 @@ public class DrugRepository {
                     rs.getString("dosage_form")
             ), uuid);
 
-            log.info("✅ Drug erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Drug erfolgreich aus der Datenbank geladen: {}", uuid);
             return drug;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Drugs mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Drugs mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

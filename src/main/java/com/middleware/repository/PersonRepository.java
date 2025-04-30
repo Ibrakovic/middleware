@@ -53,12 +53,12 @@ public class PersonRepository {
                     person.getGender(),
                     person.getAge(),
                     formatDate(person.getBirthdate()));
-            return "✅ Person erfolgreich gespeichert in die Datenbank in der Cloud: " + person.getUuid();
+            return "Person erfolgreich gespeichert in die Datenbank in der Cloud: " + person.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}",
                     sql, person.getUuid(), person.getDisplay(), person.getGender(),
                     person.getAge(), person.getBirthdate());
-            return "❌ Fehler beim Speichern der Person " + person.getUuid() + "in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern der Person " + person.getUuid() + "in die Datenbank in der Cloud: " + e.getMessage();
         }
 
     }
@@ -78,7 +78,7 @@ public class PersonRepository {
             LocalDate localDate = LocalDateTime.parse(date, formatter).toLocalDate();
             return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         } catch (DateTimeParseException e) {
-            log.error("❌ Fehler beim Formatieren des Datums: {}", date, e);
+            log.error("Fehler beim Formatieren des Datums: {}", date, e);
             return null;
         }
     }
@@ -108,11 +108,11 @@ public class PersonRepository {
                     rs.getString("birthdate")
             ), uuid);
 
-            log.info("✅ Person erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Person erfolgreich aus der Datenbank geladen: {}", uuid);
             return person;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Person mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden der Person mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

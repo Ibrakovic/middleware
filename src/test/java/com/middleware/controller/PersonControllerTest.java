@@ -27,7 +27,7 @@ public class PersonControllerTest {
     @Test
     public void testOnlyLoadPersonsWithoutSaving() throws Exception {
         mockMvc.perform(get("/api/person")
-                        .param("limit", "50")
+                        .param("limit", "50000")
                         .header("Authorization", basicAuth("admin", "testtest")))
                 .andExpect(status().isOk());
     }
@@ -40,7 +40,7 @@ public class PersonControllerTest {
 
     @Test
     public void testLoadAndSavePersonsWithLimit() throws Exception {
-        int limit = 1000;
+        int limit = 5000;
         long start = System.currentTimeMillis();
 
         mockMvc.perform(get("/api/person")
@@ -50,7 +50,7 @@ public class PersonControllerTest {
                 .andExpect(status().isOk());
 
         long duration = System.currentTimeMillis() - start;
-        System.out.println("⏱ Testlauf (limit=" + limit + ") dauerte " + duration + " ms");
+        System.out.println("Testlauf (limit=" + limit + ") dauerte " + duration + " ms");
     }
 
 

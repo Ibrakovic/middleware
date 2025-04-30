@@ -35,9 +35,9 @@ public class PersonController {
 
         if (save) {
             personService.savePersonToDatabase(dummyPersons);
-            return ResponseEntity.ok("✅ " + dummyPersons.size() + " Dummy-Personen generiert und gespeichert.");
+            return ResponseEntity.ok(dummyPersons.size() + " Dummy-Personen generiert und gespeichert.");
         } else {
-            return ResponseEntity.ok("🔍 " + dummyPersons.size() + " Dummy-Personen generiert (nicht gespeichert nur generiert).");
+            return ResponseEntity.ok(dummyPersons.size() + " Dummy-Personen generiert (nicht gespeichert nur generiert).");
         }
     }
 }

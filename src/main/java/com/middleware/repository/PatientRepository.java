@@ -53,12 +53,12 @@ public class PatientRepository {
                     patient.getGender(),
                     patient.getAge(),
                     formatDate(patient.getBirthdate()));
-            return "✅ Patient erfolgreich gespeichert in die Datenbank in der Cloud: " + patient.getUuid();
+            return "Patient erfolgreich gespeichert in die Datenbank in der Cloud: " + patient.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}",
                     sql, patient.getUuid(), patient.getDisplay(), patient.getPersonName(),
                     patient.getGender(), patient.getAge(), patient.getBirthdate());
-            return "❌ Fehler beim Speichern von Patient " + patient.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
+            return "Fehler beim Speichern von Patient " + patient.getUuid() + " in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -76,7 +76,7 @@ public class PatientRepository {
             LocalDate localDate = LocalDateTime.parse(date, formatter).toLocalDate();
             return java.sql.Date.valueOf(localDate);
         } catch (DateTimeParseException e) {
-            log.error("❌ Fehler beim Formatieren des Datums: {}", date, e);
+            log.error("Fehler beim Formatieren des Datums: {}", date, e);
             return null;  // If the date is not in the expected format
         }
     }
@@ -107,11 +107,11 @@ public class PatientRepository {
                     rs.getString("birthdate")
             ), uuid);
 
-            log.info("✅ Patient erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("Patient erfolgreich aus der Datenbank geladen: {}", uuid);
             return patient;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des Patienten mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des Patienten mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

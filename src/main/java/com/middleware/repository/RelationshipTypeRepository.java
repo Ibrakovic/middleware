@@ -50,12 +50,12 @@ public class RelationshipTypeRepository  {
                     rel.getDescription(),
                     rel.getDisplay()
                     );
-            return "✅ Relationship type successfully saved in die Datenbank in der Cloud: " + rel.getUuid();
+            return "Relationship type successfully saved in die Datenbank in der Cloud: " + rel.getUuid();
         } catch (Exception e) {
             log.info("Executing SQL: {} with parameters: {}, {}, {}, {}, {}, {}",
                     sql, rel.getUuid(), rel.getAIsToB(), rel.getBIsToA(),
                     rel.getWeight(), rel.getDescription(), rel.getDisplay());
-            return "❌ Error saving relationship type " + rel.getUuid() + "in die Datenbank in der Cloud: " + e.getMessage();
+            return "Error saving relationship type " + rel.getUuid() + "in die Datenbank in der Cloud: " + e.getMessage();
         }
     }
 
@@ -86,11 +86,11 @@ public class RelationshipTypeRepository  {
                     rs.getString("display")
             ), uuid);
 
-            log.info("✅ RelationshipType erfolgreich aus der Datenbank geladen: {}", uuid);
+            log.info("RelationshipType erfolgreich aus der Datenbank geladen: {}", uuid);
             return relationshipType;
 
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden des RelationshipType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
+            log.error("Fehler beim Laden des RelationshipType mit UUID {} aus der Datenbank: {}", uuid, e.getMessage(), e);
             return null;
         }
     }

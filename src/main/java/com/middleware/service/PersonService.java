@@ -31,10 +31,10 @@ public class PersonService {
                 throw new IllegalArgumentException("UUID darf nicht null sein");
             }
             try {
-                personRepository.savePerson(person);
-                log.info("✅ Person erfolgreich gespeichert in der Datenbank: {}", person.getUuid());
+                String result = personRepository.savePerson(person);
+                log.info(result);
             } catch (IllegalArgumentException e) {
-                log.error("❌ Fehler beim Speichern der Person in die Datenbank {}: {}", person.getUuid(), e.getMessage(), e);
+                log.error("Fehler beim Speichern der Person in die Datenbank {}: {}", person.getUuid(), e.getMessage(), e);
                 throw new IllegalArgumentException("Fehler beim Speichern der Person", e);
             }
         }
@@ -76,9 +76,9 @@ public class PersonService {
                 }
             }
 
-            log.info("✅ Personen erfolgreich von OpenMRS in die Middleware geladen.");
+            log.info("Personen erfolgreich von OpenMRS in die Middleware geladen.");
         } catch (Exception e) {
-            log.error("❌ Fehler beim Laden der Personen von OpenMRS: {}", e.getMessage(), e);
+            log.error("Fehler beim Laden der Personen von OpenMRS: {}", e.getMessage(), e);
         }
 
         return personList;
