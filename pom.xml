@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.middleware</groupId>
-	<artifactId>openmrs-openelis-middleware</artifactId>
+	<artifactId>middleware</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>openmrs-openelis-middleware</name>
-	<description>Demo project for Spring Boot</description>
+	<name>middleware</name>
+	<description>Middleware for OpenMRS. Bachelor Asmir Ibrakovic </description>
 	<url/>
 	<licenses>
 		<license/>

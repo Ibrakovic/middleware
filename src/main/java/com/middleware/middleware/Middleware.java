@@ -1,4 +1,4 @@
-package com.middleware.openmrs_openelis_middleware;
+package com.middleware.middleware;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,10 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableRetry
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = "com.middleware")
-public class OpenmrsOpenelisMiddlewareApplication {
+public class Middleware {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OpenmrsOpenelisMiddlewareApplication.class, args);
+		SpringApplication.run(Middleware.class, args);
 	}
 
 	@Bean
